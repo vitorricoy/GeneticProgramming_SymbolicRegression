@@ -1,0 +1,9 @@
+expr = expr dop expr | var | numb | sop expr
+
+dop = + | - | * | / 
+
+sop = sin | cos | ln | exp | inv
+
+var = a | b | c | d | e | f | g | h | i | j | k | ... | z
+
+numb = 1 | 2 | 4 | 8 | 16 | 32 | 64
