@@ -1,60 +1,158 @@
 #include <stdlib.h>
 #include <ctime>
 #include <iostream>
+#include <algorithm>
+#include <random>
+#include <limits>
 
-#include "arvore/no.h"
-#include "arvore/no-constante.h"
-#include "arvore/no-variavel.h"
-#include "arvore/no-operacao-binaria.h"
-#include "arvore/no-operacao-unaria.h"
+#include "genotipo/genotipo.h"
+#include "fitness/dados-treinamento.h"
+#include "fitness/calculadora-fitness.h"
 
-int numeroVariaveis = 3;
+int pm = 30;
+std::vector<double> fitness;
+std::vector<Genotipo *> individuos;
+CalculadoraFitness *calculadora;
+std::vector<int> indiceIndividuos;
+std::mt19937 generator(static_cast<long unsigned int>((std::time(NULL))));
+bool operadoresElitistas = false;
 
-No *gerarArvore(int &naoTerminais)
+int tamanhoTorneio = 3;
+
+void atualizarFitness()
 {
-    int aleatorio = rand() % 100;
-    if (aleatorio < 15 * naoTerminais)
+    fitness.clear();
+    for (unsigned i = 0; i < individuos.size(); i++)
     {
-        // Gera terminal
-        if (rand() % 2 == 0)
+        fitness.push_back(calculadora->calcularFitness(individuos[i]->converterEmArvore()));
+    }
+}
+
+std::pair<int, int> selecionaPais()
+{
+    std::shuffle(indiceIndividuos.begin(), indiceIndividuos.end(), generator);
+    double fitnessMelhor1 = std::numeric_limits<double>::max();
+    int indiceMelhor1 = -1;
+    for (int j = 0; j < tamanhoTorneio; j++)
+    {
+        if (fitness[indiceIndividuos[j]] > fitnessMelhor1)
         {
-            // Constante
-            int idtConstante = rand() % 8;
-            return new NoConstante(Constante(idtConstante));
-        }
-        else
-        {
-            // Variavel
-            int idtVariavel = rand() % numeroVariaveis;
-            return new NoVariavel(Variavel(idtVariavel));
+            fitnessMelhor1 = fitness[indiceIndividuos[j]];
+            indiceMelhor1 = indiceIndividuos[j];
         }
     }
-    else
+    std::shuffle(indiceIndividuos.begin(), indiceIndividuos.end(), generator);
+    double fitnessMelhor2 = std::numeric_limits<double>::max();
+    int indiceMelhor2 = -1;
+    for (int j = 0; j < tamanhoTorneio; j++)
     {
-        // Gera nao terminal
-        naoTerminais++;
-        if (rand() % 2 == 0)
+        if (indiceMelhor1 != indiceIndividuos[j] && fitness[indiceIndividuos[j]] > fitnessMelhor2)
         {
-            // Unario
-            int idtUnario = rand() % 5;
-            return new NoOperacaoUnaria(OperacaoUnaria(idtUnario), gerarArvore(naoTerminais));
-        }
-        else
-        {
-            // Binario
-            int idtBinario = rand() % 4;
-            return new NoOperacaoBinaria(OperacaoBinaria(idtBinario), gerarArvore(naoTerminais), gerarArvore(naoTerminais));
+            fitnessMelhor2 = fitness[indiceIndividuos[j]];
+            indiceMelhor2 = indiceIndividuos[j];
         }
     }
+    return {indiceMelhor1, indiceMelhor2};
+}
+
+int selecionaUm()
+{
+    std::shuffle(indiceIndividuos.begin(), indiceIndividuos.end(), generator);
+    double fitnessMelhor = std::numeric_limits<double>::max();
+    int indiceMelhor = -1;
+    for (int j = 0; j < tamanhoTorneio; j++)
+    {
+        if (fitness[indiceIndividuos[j]] < fitnessMelhor)
+        {
+            fitnessMelhor = fitness[indiceIndividuos[j]];
+            indiceMelhor = indiceIndividuos[j];
+        }
+    }
+    return indiceMelhor;
 }
 
 int main()
 {
     srand(std::time(NULL));
-    for (int i = 0; i < 15; i++)
+    DadosTreinamento *dadosTreinamento = new DadosTreinamento("datasets/synth1/synth1-train.csv");
+    calculadora = new CalculadoraFitness(dadosTreinamento);
+    for (int i = 0; i < 100; i++)
     {
-        int tam = 0;
-        No *arv = gerarArvore(tam);
-        std::cout << arv->print() << std::endl;
+        individuos.push_back(new Genotipo(dadosTreinamento->dimensao()));
+        indiceIndividuos.push_back(i);
     }
+    atualizarFitness();
+    for (int geracoes = 0; geracoes < 100; geracoes++)
+    {
+        std::vector<Genotipo *> novaPopulacao;
+        // Realiza selecoes até encher população
+        while (novaPopulacao.size() < individuos.size())
+        {
+            if (rand() % 100 < pm)
+            {
+                int individuo = selecionaUm();
+                Genotipo *mutacao = individuos[individuo]->criarMutacao();
+                if (operadoresElitistas)
+                {
+                    double fitnessMutacao = calculadora->calcularFitness(mutacao->converterEmArvore());
+                    if (fitnessMutacao <= fitness[individuo])
+                    {
+                        novaPopulacao.push_back(mutacao);
+                    }
+                    else
+                    {
+                        novaPopulacao.push_back(individuos[individuo]);
+                    }
+                }
+                else
+                {
+                    novaPopulacao.push_back(mutacao);
+                }
+            }
+            else
+            {
+                std::pair<int, int> paiMae = selecionaPais();
+                // Seleciona
+                Genotipo *pai = individuos[paiMae.first];
+                Genotipo *mae = individuos[paiMae.second];
+
+                std::pair<Genotipo *, Genotipo *> filhos = pai->recombinar(mae);
+
+                if (operadoresElitistas)
+                {
+                    // Implementa operadores elitistas
+                    std::vector<std::pair<double, Genotipo *>> opcoes;
+                    opcoes.push_back({fitness[paiMae.first], pai});
+                    opcoes.push_back({fitness[paiMae.second], mae});
+
+                    double fitnessFilho1 = calculadora->calcularFitness(filhos.first->converterEmArvore());
+                    double fitnessFilho2 = calculadora->calcularFitness(filhos.second->converterEmArvore());
+                    opcoes.push_back({fitnessFilho1, filhos.first});
+                    opcoes.push_back({fitnessFilho2, filhos.second});
+
+                    std::sort(opcoes.begin(), opcoes.end());
+                    novaPopulacao.push_back(opcoes[0].second);
+                    novaPopulacao.push_back(opcoes[1].second);
+                }
+                else
+                {
+                    novaPopulacao.push_back(filhos.first);
+                    novaPopulacao.push_back(filhos.second);
+                }
+            }
+        }
+        while (novaPopulacao.size() > individuos.size())
+        {
+            novaPopulacao.pop_back();
+        }
+        individuos.clear();
+        individuos = novaPopulacao;
+        atualizarFitness();
+    }
+    for (double f : fitness)
+    {
+        std::cout << f << " ";
+    }
+    std::cout << "\n";
+    return 0;
 }

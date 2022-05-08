@@ -35,12 +35,12 @@ enum Variavel
 class NoVariavel : public No
 {
 public:
+    NoVariavel(Variavel v);
     int numeroFilhos();
     bool terminal();
     std::vector<No *> filhos();
     double valor(std::vector<double> &variaveis);
     std::string print();
-    NoVariavel(Variavel v);
 
 private:
     Variavel valorNo;

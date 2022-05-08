@@ -38,10 +38,6 @@ double NoConstante::valor(std::vector<double> &variaveis)
         return 16;
     case TRINTA_DOIS:
         return 32;
-    case SESSENTA_QUATRO:
-        return 64;
-    case CENTO_VINTE_OITO:
-        return 128;
     default:
         return 0;
     }
@@ -63,10 +59,6 @@ std::string NoConstante::print()
         return "16";
     case TRINTA_DOIS:
         return "32";
-    case SESSENTA_QUATRO:
-        return "64";
-    case CENTO_VINTE_OITO:
-        return "128";
     default:
         return "0";
     }

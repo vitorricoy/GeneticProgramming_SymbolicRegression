@@ -37,14 +37,7 @@ double NoOperacaoBinaria::valor(std::vector<double> &variaveis)
     case MULTIPLICACAO:
         return v1 * v2;
     case DIVISAO:
-        if (v2 == 0)
-        {
-            return 0;
-        }
-        else
-        {
-            return v1 / v2;
-        }
+        return v2 == 0 ? 0 : v1 / v2;
     default:
         return 0;
     }

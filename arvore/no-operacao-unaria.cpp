@@ -34,11 +34,11 @@ double NoOperacaoUnaria::valor(std::vector<double> &variaveis)
     case COSSENO:
         return std::cos(v);
     case INV:
-        return 1.0 / v;
+        return v == 0 ? 0 : 1.0 / v;
     case EXP:
         return std::exp(v);
     case LOG:
-        return std::log(v);
+        return v == 0 ? 0 : std::log(std::abs(v));
     default:
         return 0;
     }

@@ -14,12 +14,12 @@ enum OperacaoUnaria
 class NoOperacaoUnaria : public No
 {
 public:
+    NoOperacaoUnaria(OperacaoUnaria o, No *f);
     int numeroFilhos();
     bool terminal();
     std::vector<No *> filhos();
     double valor(std::vector<double> &variaveis);
     std::string print();
-    NoOperacaoUnaria(OperacaoUnaria o, No *f);
 
 private:
     OperacaoUnaria valorNo;

@@ -9,20 +9,18 @@ enum Constante
     QUATRO,
     OITO,
     DEZESSEIS,
-    TRINTA_DOIS,
-    SESSENTA_QUATRO,
-    CENTO_VINTE_OITO
+    TRINTA_DOIS
 };
 
 class NoConstante : public No
 {
 public:
+    NoConstante(Constante c);
     int numeroFilhos();
     bool terminal();
     std::vector<No *> filhos();
     double valor(std::vector<double> &variaveis);
     std::string print();
-    NoConstante(Constante c);
 
 private:
     Constante valorNo;
