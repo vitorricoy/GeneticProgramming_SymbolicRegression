@@ -9,7 +9,10 @@
 #include "fitness/dados-treinamento.h"
 #include "fitness/calculadora-fitness.h"
 
-int pm = 30;
+#define PM 5
+#define TAM_POP 100
+#define NUM_GER 10000
+
 std::vector<double> fitness;
 std::vector<Genotipo *> individuos;
 CalculadoraFitness *calculadora;
@@ -35,7 +38,7 @@ std::pair<int, int> selecionaPais()
     int indiceMelhor1 = -1;
     for (int j = 0; j < tamanhoTorneio; j++)
     {
-        if (fitness[indiceIndividuos[j]] > fitnessMelhor1)
+        if (fitness[indiceIndividuos[j]] < fitnessMelhor1)
         {
             fitnessMelhor1 = fitness[indiceIndividuos[j]];
             indiceMelhor1 = indiceIndividuos[j];
@@ -46,7 +49,7 @@ std::pair<int, int> selecionaPais()
     int indiceMelhor2 = -1;
     for (int j = 0; j < tamanhoTorneio; j++)
     {
-        if (indiceMelhor1 != indiceIndividuos[j] && fitness[indiceIndividuos[j]] > fitnessMelhor2)
+        if (indiceMelhor1 != indiceIndividuos[j] && fitness[indiceIndividuos[j]] < fitnessMelhor2)
         {
             fitnessMelhor2 = fitness[indiceIndividuos[j]];
             indiceMelhor2 = indiceIndividuos[j];
@@ -74,21 +77,23 @@ int selecionaUm()
 int main()
 {
     srand(std::time(NULL));
+    individuos = std::vector<Genotipo *>();
     DadosTreinamento *dadosTreinamento = new DadosTreinamento("datasets/synth1/synth1-train.csv");
     calculadora = new CalculadoraFitness(dadosTreinamento);
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < TAM_POP; i++)
     {
-        individuos.push_back(new Genotipo(dadosTreinamento->dimensao()));
+        Genotipo *novo = new Genotipo(dadosTreinamento->dimensao());
+        individuos.push_back(novo);
         indiceIndividuos.push_back(i);
     }
     atualizarFitness();
-    for (int geracoes = 0; geracoes < 100; geracoes++)
+    for (int geracoes = 0; geracoes < NUM_GER; geracoes++)
     {
         std::vector<Genotipo *> novaPopulacao;
         // Realiza selecoes até encher população
         while (novaPopulacao.size() < individuos.size())
         {
-            if (rand() % 100 < pm)
+            if (rand() % 100 < PM)
             {
                 int individuo = selecionaUm();
                 Genotipo *mutacao = individuos[individuo]->criarMutacao();
@@ -149,10 +154,17 @@ int main()
         individuos = novaPopulacao;
         atualizarFitness();
     }
-    for (double f : fitness)
+    int indMelhor = -1;
+    double fitnessMelhor = std::numeric_limits<double>::max();
+    for (unsigned i = 0; i < fitness.size(); i++)
     {
-        std::cout << f << " ";
+        if (fitnessMelhor > fitness[i])
+        {
+            fitnessMelhor = fitness[i];
+            indMelhor = i;
+        }
     }
-    std::cout << "\n";
+    std::cout << individuos[indMelhor]->converterEmArvore()->print() << "\n";
+    std::cout << fitnessMelhor << "\n";
     return 0;
 }

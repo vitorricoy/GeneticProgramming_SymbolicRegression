@@ -5,6 +5,9 @@
 class No
 {
 public:
+    template <typename T>
+    void unusedArg(const T &) {}
+
     virtual int numeroFilhos() = 0;
     virtual bool terminal() = 0;
     virtual std::vector<No *> filhos() = 0;

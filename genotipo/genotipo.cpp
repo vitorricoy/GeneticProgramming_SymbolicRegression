@@ -19,15 +19,15 @@ Genotipo::Genotipo(int n)
     operacoesUnarias.clear();
     operacoesBinarias.clear();
 
-    inicio.push_back(gerarRegraProducaoAleatoria());
+    inicio.push_back(gerarRegraProducaoAleatoria(n));
 
-    expr1.push_back(gerarRegraProducaoAleatoria());
-    expr1.push_back(gerarRegraProducaoAleatoria());
+    expr1.push_back(gerarRegraProducaoAleatoria(n));
+    expr1.push_back(gerarRegraProducaoAleatoria(n));
 
-    expr2.push_back(gerarRegraProducaoAleatoria());
-    expr2.push_back(gerarRegraProducaoAleatoria());
-    expr2.push_back(gerarRegraProducaoAleatoria());
-    expr2.push_back(gerarRegraProducaoAleatoria());
+    expr2.push_back(gerarRegraProducaoAleatoria(n));
+    expr2.push_back(gerarRegraProducaoAleatoria(n));
+    expr2.push_back(gerarRegraProducaoAleatoria(n));
+    expr2.push_back(gerarRegraProducaoAleatoria(n));
 
     expr3.push_back(rand() % numTerminais);
     expr3.push_back(rand() % numTerminais);
@@ -66,7 +66,7 @@ Genotipo::Genotipo(int n, std::vector<int> inicio, std::vector<int> expr1, std::
     this->operacoesUnarias = operacoesUnarias;
 }
 
-int Genotipo::gerarRegraProducaoAleatoria()
+int Genotipo::gerarRegraProducaoAleatoria(int numVariaveis)
 {
     int numTerminais = numVariaveis + 6;
     int op = rand() % 3;
@@ -80,10 +80,7 @@ int Genotipo::gerarRegraProducaoAleatoria()
         // Unaria
         return 1;
     }
-    if (op == 2)
-    {
-        return 2 + (rand() % numTerminais);
-    }
+    return 2 + (rand() % numTerminais);
 }
 
 std::pair<Genotipo *, Genotipo *> Genotipo::recombinar(Genotipo *par)
@@ -136,14 +133,14 @@ void Genotipo::mutar()
     switch (op1)
     {
     case 0:
-        inicio[0] = gerarRegraProducaoAleatoria();
+        inicio[0] = gerarRegraProducaoAleatoria(numVariaveis);
         break;
     case 1:
-        expr1[rand() % 2] = gerarRegraProducaoAleatoria();
+        expr1[rand() % 2] = gerarRegraProducaoAleatoria(numVariaveis);
         break;
 
     case 2:
-        expr2[rand() % 4] = gerarRegraProducaoAleatoria();
+        expr2[rand() % 4] = gerarRegraProducaoAleatoria(numVariaveis);
         break;
     case 3:
         expr3[rand() % 8] = rand() % (numVariaveis + 6);

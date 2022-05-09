@@ -16,7 +16,7 @@ public:
     No *converterEmArvore();
 
 private:
-    int gerarRegraProducaoAleatoria();
+    int gerarRegraProducaoAleatoria(int numVariaveis);
     No *gerarInicio(int &indInicio, int &indExpr1, int &indExpr2, int &indExpr3, int &indOpUn, int &indOpBin);
     No *gerarExpr1(int &indInicio, int &indExpr1, int &indExpr2, int &indExpr3, int &indOpUn, int &indOpBin);
     No *gerarExpr2(int &indInicio, int &indExpr1, int &indExpr2, int &indExpr3, int &indOpUn, int &indOpBin);
