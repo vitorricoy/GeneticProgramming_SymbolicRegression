@@ -7,7 +7,8 @@ enum OperacaoBinaria
     SOMA,
     SUBTRACAO,
     MULTIPLICACAO,
-    DIVISAO
+    DIVISAO,
+    EXPONENCIACAO
 };
 
 class NoOperacaoBinaria : public No

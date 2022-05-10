@@ -6,8 +6,6 @@ enum OperacaoUnaria
 {
     SENO,
     COSSENO,
-    INV,
-    EXP,
     LOG
 };
 

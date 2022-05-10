@@ -10,7 +10,7 @@ class Genotipo
 public:
     Genotipo(int n);
     Genotipo(int n, std::vector<int> inicio, std::vector<int> expr1, std::vector<int> expr2, std::vector<int> expr3, std::vector<int> operacoesBinarias, std::vector<int> operacoesUnarias);
-    std::pair<Genotipo *, Genotipo *> recombinar(Genotipo *par);
+    Genotipo *recombinar(Genotipo *par);
     void mutar();
     Genotipo *criarMutacao();
     No *converterEmArvore();

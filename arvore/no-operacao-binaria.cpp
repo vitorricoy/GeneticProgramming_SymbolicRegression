@@ -1,5 +1,6 @@
 #include "no-operacao-binaria.h"
 #include <vector>
+#include <cmath>
 
 NoOperacaoBinaria::NoOperacaoBinaria(OperacaoBinaria o, No *f1, No *f2)
 {
@@ -38,6 +39,8 @@ double NoOperacaoBinaria::valor(std::vector<double> &variaveis)
         return v1 * v2;
     case DIVISAO:
         return v2 == 0 ? 0 : v1 / v2;
+    case EXPONENCIACAO:
+        return std::pow(v1, v2);
     default:
         return 0;
     }
@@ -59,6 +62,9 @@ std::string NoOperacaoBinaria::print()
         break;
     case DIVISAO:
         op = "/";
+        break;
+    case EXPONENCIACAO:
+        op = "^";
         break;
     default:
         op = "ERRO";

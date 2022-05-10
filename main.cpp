@@ -10,8 +10,8 @@
 #include "fitness/calculadora-fitness.h"
 
 #define PM 5
-#define TAM_POP 100
-#define NUM_GER 10000
+#define TAM_POP 500
+#define NUM_GER 500
 
 std::vector<double> fitness;
 std::vector<Genotipo *> individuos;
@@ -35,7 +35,7 @@ std::pair<int, int> selecionaPais()
 {
     std::shuffle(indiceIndividuos.begin(), indiceIndividuos.end(), generator);
     double fitnessMelhor1 = std::numeric_limits<double>::max();
-    int indiceMelhor1 = -1;
+    int indiceMelhor1 = indiceIndividuos.front();
     for (int j = 0; j < tamanhoTorneio; j++)
     {
         if (fitness[indiceIndividuos[j]] < fitnessMelhor1)
@@ -46,7 +46,7 @@ std::pair<int, int> selecionaPais()
     }
     std::shuffle(indiceIndividuos.begin(), indiceIndividuos.end(), generator);
     double fitnessMelhor2 = std::numeric_limits<double>::max();
-    int indiceMelhor2 = -1;
+    int indiceMelhor2 = indiceIndividuos.front();
     for (int j = 0; j < tamanhoTorneio; j++)
     {
         if (indiceMelhor1 != indiceIndividuos[j] && fitness[indiceIndividuos[j]] < fitnessMelhor2)
@@ -80,6 +80,7 @@ int main()
     individuos = std::vector<Genotipo *>();
     DadosTreinamento *dadosTreinamento = new DadosTreinamento("datasets/synth1/synth1-train.csv");
     calculadora = new CalculadoraFitness(dadosTreinamento);
+
     for (int i = 0; i < TAM_POP; i++)
     {
         Genotipo *novo = new Genotipo(dadosTreinamento->dimensao());
@@ -87,11 +88,12 @@ int main()
         indiceIndividuos.push_back(i);
     }
     atualizarFitness();
+    std::vector<double> todasFitness;
     for (int geracoes = 0; geracoes < NUM_GER; geracoes++)
     {
         std::vector<Genotipo *> novaPopulacao;
         // Realiza selecoes até encher população
-        while (novaPopulacao.size() < individuos.size())
+        for (int i = 0; i < TAM_POP; i++)
         {
             if (rand() % 100 < PM)
             {
@@ -117,11 +119,12 @@ int main()
             else
             {
                 std::pair<int, int> paiMae = selecionaPais();
-                // Seleciona
+                //  std::cout << paiMae.first << " " << paiMae.second << std::endl;
+                //  Seleciona
                 Genotipo *pai = individuos[paiMae.first];
                 Genotipo *mae = individuos[paiMae.second];
 
-                std::pair<Genotipo *, Genotipo *> filhos = pai->recombinar(mae);
+                Genotipo *filho = pai->recombinar(mae);
 
                 if (operadoresElitistas)
                 {
@@ -130,19 +133,15 @@ int main()
                     opcoes.push_back({fitness[paiMae.first], pai});
                     opcoes.push_back({fitness[paiMae.second], mae});
 
-                    double fitnessFilho1 = calculadora->calcularFitness(filhos.first->converterEmArvore());
-                    double fitnessFilho2 = calculadora->calcularFitness(filhos.second->converterEmArvore());
-                    opcoes.push_back({fitnessFilho1, filhos.first});
-                    opcoes.push_back({fitnessFilho2, filhos.second});
+                    double fitnessFilho = calculadora->calcularFitness(filho->converterEmArvore());
+                    opcoes.push_back({fitnessFilho, filho});
 
                     std::sort(opcoes.begin(), opcoes.end());
                     novaPopulacao.push_back(opcoes[0].second);
-                    novaPopulacao.push_back(opcoes[1].second);
                 }
                 else
                 {
-                    novaPopulacao.push_back(filhos.first);
-                    novaPopulacao.push_back(filhos.second);
+                    novaPopulacao.push_back(filho);
                 }
             }
         }
@@ -152,8 +151,15 @@ int main()
         }
         individuos.clear();
         individuos = novaPopulacao;
+
         atualizarFitness();
     }
+    double v = 0.0;
+    for (double f : fitness)
+    {
+        v += f;
+    }
+    todasFitness.push_back(v / fitness.size());
     int indMelhor = -1;
     double fitnessMelhor = std::numeric_limits<double>::max();
     for (unsigned i = 0; i < fitness.size(); i++)

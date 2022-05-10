@@ -38,21 +38,21 @@ Genotipo::Genotipo(int n)
     expr3.push_back(rand() % numTerminais);
     expr3.push_back(rand() % numTerminais);
 
-    operacoesBinarias.push_back(rand() % 4);
-    operacoesBinarias.push_back(rand() % 4);
-    operacoesBinarias.push_back(rand() % 4);
-    operacoesBinarias.push_back(rand() % 4);
-    operacoesBinarias.push_back(rand() % 4);
-    operacoesBinarias.push_back(rand() % 4);
-    operacoesBinarias.push_back(rand() % 4);
+    operacoesBinarias.push_back(rand() % 5);
+    operacoesBinarias.push_back(rand() % 5);
+    operacoesBinarias.push_back(rand() % 5);
+    operacoesBinarias.push_back(rand() % 5);
+    operacoesBinarias.push_back(rand() % 5);
+    operacoesBinarias.push_back(rand() % 5);
+    operacoesBinarias.push_back(rand() % 5);
 
-    operacoesUnarias.push_back(rand() % 5);
-    operacoesUnarias.push_back(rand() % 5);
-    operacoesUnarias.push_back(rand() % 5);
-    operacoesUnarias.push_back(rand() % 5);
-    operacoesUnarias.push_back(rand() % 5);
-    operacoesUnarias.push_back(rand() % 5);
-    operacoesUnarias.push_back(rand() % 5);
+    operacoesUnarias.push_back(rand() % 3);
+    operacoesUnarias.push_back(rand() % 3);
+    operacoesUnarias.push_back(rand() % 3);
+    operacoesUnarias.push_back(rand() % 3);
+    operacoesUnarias.push_back(rand() % 3);
+    operacoesUnarias.push_back(rand() % 3);
+    operacoesUnarias.push_back(rand() % 3);
 }
 
 Genotipo::Genotipo(int n, std::vector<int> inicio, std::vector<int> expr1, std::vector<int> expr2, std::vector<int> expr3, std::vector<int> operacoesBinarias, std::vector<int> operacoesUnarias)
@@ -83,41 +83,47 @@ int Genotipo::gerarRegraProducaoAleatoria(int numVariaveis)
     return 2 + (rand() % numTerminais);
 }
 
-std::pair<Genotipo *, Genotipo *> Genotipo::recombinar(Genotipo *par)
+Genotipo *Genotipo::recombinar(Genotipo *par)
 {
-    int mascara = 1 + (rand() % 7);
-    std::vector<int> inicio1 = this->inicio;
-    std::vector<int> expr11 = this->expr1;
-    std::vector<int> expr21 = this->expr2;
-    std::vector<int> expr31 = this->expr3;
-    std::vector<int> operacoesBinarias1 = this->operacoesBinarias;
-    std::vector<int> operacoesUnarias1 = this->operacoesUnarias;
-
-    std::vector<int> inicio2 = par->inicio;
-    std::vector<int> expr12 = par->expr1;
-    std::vector<int> expr22 = par->expr2;
-    std::vector<int> expr32 = par->expr3;
-    std::vector<int> operacoesBinarias2 = par->operacoesBinarias;
-    std::vector<int> operacoesUnarias2 = par->operacoesUnarias;
+    int mascara = 1 + (rand() % 62);
+    std::vector<int> inicio = this->inicio;
+    std::vector<int> expr1 = this->expr1;
+    std::vector<int> expr2 = this->expr2;
+    std::vector<int> expr3 = this->expr3;
+    std::vector<int> operacoesBinarias = this->operacoesBinarias;
+    std::vector<int> operacoesUnarias = this->operacoesUnarias;
 
     if (mascara & 1)
     {
-        operacoesUnarias1.swap(operacoesUnarias2);
+        operacoesUnarias = par->operacoesUnarias;
     }
 
     if (mascara & 2)
     {
-        operacoesBinarias1.swap(operacoesBinarias2);
+        operacoesBinarias = par->operacoesBinarias;
     }
 
     if (mascara & 4)
     {
-        expr31.swap(expr32);
+        expr3 = par->expr3;
     }
 
-    return std::make_pair(
-        new Genotipo(this->numVariaveis, inicio1, expr11, expr21, expr31, operacoesBinarias1, operacoesUnarias1),
-        new Genotipo(this->numVariaveis, inicio2, expr12, expr22, expr32, operacoesBinarias2, operacoesUnarias2));
+    if (mascara & 8)
+    {
+        expr2 = par->expr3;
+    }
+
+    if (mascara & 16)
+    {
+        expr1 = par->expr3;
+    }
+
+    if (mascara & 32)
+    {
+        inicio = par->inicio;
+    }
+
+    return new Genotipo(this->numVariaveis, inicio, expr1, expr2, expr3, operacoesBinarias, operacoesUnarias);
 }
 
 Genotipo *Genotipo::criarMutacao()
@@ -146,10 +152,10 @@ void Genotipo::mutar()
         expr3[rand() % 8] = rand() % (numVariaveis + 6);
         break;
     case 4:
-        operacoesBinarias[rand() % 7] = rand() % 4;
+        operacoesBinarias[rand() % 7] = rand() % 5;
         break;
     default:
-        operacoesUnarias[rand() % 7] = rand() % 5;
+        operacoesUnarias[rand() % 7] = rand() % 3;
         break;
     }
 }

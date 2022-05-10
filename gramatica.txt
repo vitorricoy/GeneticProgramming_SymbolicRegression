@@ -1,16 +1,18 @@
-expr1 = expr2 dop expr2 | sop expr2 | a | b | c | d | e | f | g | h | i | j | k | ... | z | 1 | 2 | 4 | 8 | 16 | 32
+expr1 = expr2 dop expr2 | sop expr2 | a | b | c | d | e | f | g | h | i | j | k | ... | z | randomConstant
 
-expr2 = expr3 dop expr3 | sop expr3 | a | b | c | d | e | f | g | h | i | j | k | ... | z | 1 | 2 | 4 | 8 | 16 | 32
+expr2 = expr3 dop expr3 | sop expr3 | a | b | c | d | e | f | g | h | i | j | k | ... | z | randomConstant
 
-expr3 = expr4 dop expr4 | sop expr4 | a | b | c | d | e | f | g | h | i | j | k | ... | z | 1 | 2 | 4 | 8 | 16 | 32
+expr3 = expr4 dop expr4 | sop expr4 | a | b | c | d | e | f | g | h | i | j | k | ... | z | randomConstant
 
-expr4 = a | b | c | d | e | f | g | h | i | j | k | ... | z | 1 | 2 | 4 | 8 | 16 | 32
+expr4 = a | b | c | d | e | f | g | h | i | j | k | ... | z | randomConstant
 
-dop = + | - | * | / 
+dop = + | - | * | / | ^
 
-sop = sin | cos | ln | exp | inv
+sop = sin | cos | ln
 
 
 expr1 | expr2 | expr3 | expr4 | dop | sop
 
-x | x x | x x x x | x x x x x x x x | x x x x x x x  | x x x x x x x
+x | x x | x x x x | x x x x x x x x | x x x x x x x | x x x x x x x
+
+0 | 2 5 | 0 0 0 0 | 0 0 0 0 0 0 0 0 | 4 0 0 0 0 0 0 | 0 0 0 0 0 0 0 
