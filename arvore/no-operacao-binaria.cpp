@@ -1,5 +1,6 @@
 #include "no-operacao-binaria.h"
 #include <vector>
+#include <limits>
 #include <cmath>
 
 NoOperacaoBinaria::NoOperacaoBinaria(OperacaoBinaria o, No *f1, No *f2)
@@ -38,7 +39,7 @@ double NoOperacaoBinaria::valor(std::vector<double> &variaveis)
     case MULTIPLICACAO:
         return v1 * v2;
     case DIVISAO:
-        return v2 == 0 ? 0 : v1 / v2;
+        return v2 == 0 ? std::numeric_limits<double>::infinity() : v1 / v2;
     case EXPONENCIACAO:
         return std::pow(v1, v2);
     default:

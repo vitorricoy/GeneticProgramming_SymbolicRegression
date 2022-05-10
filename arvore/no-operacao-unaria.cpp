@@ -1,5 +1,6 @@
 #include "no-operacao-unaria.h"
 #include <vector>
+#include <limits>
 #include <cmath>
 
 NoOperacaoUnaria::NoOperacaoUnaria(OperacaoUnaria o, No *f)
@@ -34,7 +35,9 @@ double NoOperacaoUnaria::valor(std::vector<double> &variaveis)
     case COSSENO:
         return std::cos(v);
     case LOG:
-        return v == 0 ? 0 : std::log(std::abs(v));
+        return v == 0 ? -std::numeric_limits<double>::infinity() : std::log(std::abs(v));
+    case ABS:
+    	return std::abs(v);
     default:
         return 0;
     }
@@ -54,6 +57,9 @@ std::string NoOperacaoUnaria::print()
     case LOG:
         op = "ln";
         break;
+    case ABS:
+    	op = "abs";
+    	break;
     default:
         op = "ERRO";
     }

@@ -6,7 +6,8 @@ enum OperacaoUnaria
 {
     SENO,
     COSSENO,
-    LOG
+    LOG,
+    ABS
 };
 
 class NoOperacaoUnaria : public No

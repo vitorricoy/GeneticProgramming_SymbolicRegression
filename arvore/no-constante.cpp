@@ -27,17 +27,17 @@ double NoConstante::valor(std::vector<double> &variaveis)
     switch (valorNo)
     {
     case UM:
-        return 1;
+        return -1;
     case DOIS:
-        return 2;
+        return 1;
     case QUATRO:
-        return 4;
+        return 2;
     case OITO:
-        return 8;
+        return 4;
     case DEZESSEIS:
-        return 16;
+        return 8;
     case TRINTA_DOIS:
-        return 32;
+        return 16;
     default:
         return 0;
     }
@@ -48,17 +48,17 @@ std::string NoConstante::print()
     switch (valorNo)
     {
     case UM:
-        return "1";
+        return "-1";
     case DOIS:
-        return "2";
+        return "1";
     case QUATRO:
-        return "4";
+        return "2";
     case OITO:
-        return "8";
+        return "4";
     case DEZESSEIS:
-        return "16";
+        return "8";
     case TRINTA_DOIS:
-        return "32";
+        return "16";
     default:
         return "0";
     }

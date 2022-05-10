@@ -46,13 +46,13 @@ Genotipo::Genotipo(int n)
     operacoesBinarias.push_back(rand() % 5);
     operacoesBinarias.push_back(rand() % 5);
 
-    operacoesUnarias.push_back(rand() % 3);
-    operacoesUnarias.push_back(rand() % 3);
-    operacoesUnarias.push_back(rand() % 3);
-    operacoesUnarias.push_back(rand() % 3);
-    operacoesUnarias.push_back(rand() % 3);
-    operacoesUnarias.push_back(rand() % 3);
-    operacoesUnarias.push_back(rand() % 3);
+    operacoesUnarias.push_back(rand() % 4);
+    operacoesUnarias.push_back(rand() % 4);
+    operacoesUnarias.push_back(rand() % 4);
+    operacoesUnarias.push_back(rand() % 4);
+    operacoesUnarias.push_back(rand() % 4);
+    operacoesUnarias.push_back(rand() % 4);
+    operacoesUnarias.push_back(rand() % 4);
 }
 
 Genotipo::Genotipo(int n, std::vector<int> inicio, std::vector<int> expr1, std::vector<int> expr2, std::vector<int> expr3, std::vector<int> operacoesBinarias, std::vector<int> operacoesUnarias)
@@ -155,7 +155,7 @@ void Genotipo::mutar()
         operacoesBinarias[rand() % 7] = rand() % 5;
         break;
     default:
-        operacoesUnarias[rand() % 7] = rand() % 3;
+        operacoesUnarias[rand() % 7] = rand() % 4;
         break;
     }
 }
