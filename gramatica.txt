@@ -1,18 +1,35 @@
-expr1 = expr2 dop expr2 | sop expr2 | a | b | c | d | e | f | g | h | i | j | k | ... | z | randomConstant
+inicio = expr1 + expr1 | expr1 - expr1 | expr1 * expr1 | expr1 / expr1 | expr1 ^ expr1 | sin expr1 | cos expr1 | ln expr1 | abs expr1 | vars | constanteAleatoria
 
-expr2 = expr3 dop expr3 | sop expr3 | a | b | c | d | e | f | g | h | i | j | k | ... | z | randomConstant
+expr1 = expr2 + expr2 | expr2 - expr2 | expr2 * expr2 | expr2 / expr2 | expr2 ^ expr2 | sin expr2 | cos expr2 | ln expr2 | abs expr2 | vars | constanteAleatoria
 
-expr3 = expr4 dop expr4 | sop expr4 | a | b | c | d | e | f | g | h | i | j | k | ... | z | randomConstant
+expr2 = expr3 + expr3 | expr3 - expr3 | expr3 * expr3 | expr3 / expr3 | expr3 ^ expr3 | sin expr3 | cos expr3 | ln expr3 | abs expr3 | vars | constanteAleatoria
 
-expr4 = a | b | c | d | e | f | g | h | i | j | k | ... | z | randomConstant
+expr3 = expr4 + expr4 | expr4 - expr4 | expr4 * expr4 | expr4 / expr4 | expr4 ^ expr4 | sin expr4 | cos expr4 | ln expr4 | abs expr4 | vars | constanteAleatoria
+
+expr4 = expr5 + expr5 | expr5 - expr5 | expr5 * expr5 | expr5 / expr5 | expr5 ^ expr5 | sin expr5 | cos expr5 | ln expr5 | abs expr5 | vars | constanteAleatoria
+
+expr5 = expr6 + expr6 | expr6 - expr6 | expr6 * expr6 | expr6 / expr6 | expr6 ^ expr6 | sin expr6 | cos expr6 | ln expr6 | abs expr6 | vars | constanteAleatoria
+
+expr6 = vars | constanteAleatoria
+
+randomConstant = [-1, 1]
 
 dop = + | - | * | / | ^
 
-sop = sin | cos | ln
+sop = sin | cos | ln | abs
 
 
-expr1 | expr2 | expr3 | expr4 | dop | sop
+inicio | expr1 | expr2 | expr3 | expr4 | expr5 | expr6 | randomConstant
 
-x | x x | x x x x | x x x x x x x x | x x x x x x x | x x x x x x x
+x | x x | x x x x | x x x x x x x x | x x x x x x x x x x x x x x x x | x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x | x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x | x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x
 
-0 | 2 5 | 0 0 0 0 | 0 0 0 0 0 0 0 0 | 4 0 0 0 0 0 0 | 0 0 0 0 0 0 0 
+inicio = 1
+expr1 = 2
+expr2 = 4
+expr3 = 8
+expr4 = 16
+expr5 = 32
+expr6 = 64
+randomConstant = 64
+
+0 | 2 5 | 0 0 0 0 | 0 0 0 0 0 0 0 0 | 4 0 0 0 0 0 0 | 0 0 0 0 0 0 0 | 

@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 
-NoConstante::NoConstante(Constante c)
+NoConstante::NoConstante(double c)
 {
     valorNo = c;
 }
@@ -24,42 +24,10 @@ std::vector<No *> NoConstante::filhos()
 
 double NoConstante::valor(std::vector<double> &variaveis)
 {
-    switch (valorNo)
-    {
-    case UM:
-        return -1;
-    case DOIS:
-        return 1;
-    case QUATRO:
-        return 2;
-    case OITO:
-        return 4;
-    case DEZESSEIS:
-        return 8;
-    case TRINTA_DOIS:
-        return 16;
-    default:
-        return 0;
-    }
+    return valorNo;
 }
 
 std::string NoConstante::print()
 {
-    switch (valorNo)
-    {
-    case UM:
-        return "-1";
-    case DOIS:
-        return "1";
-    case QUATRO:
-        return "2";
-    case OITO:
-        return "4";
-    case DEZESSEIS:
-        return "8";
-    case TRINTA_DOIS:
-        return "16";
-    default:
-        return "0";
-    }
+    return std::to_string(valorNo);
 }

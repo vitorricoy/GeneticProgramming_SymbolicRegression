@@ -2,20 +2,10 @@
 #include "no.h"
 #include <string>
 
-enum Constante
-{
-    UM,
-    DOIS,
-    QUATRO,
-    OITO,
-    DEZESSEIS,
-    TRINTA_DOIS
-};
-
 class NoConstante : public No
 {
 public:
-    NoConstante(Constante c);
+    NoConstante(double c);
     int numeroFilhos();
     bool terminal();
     std::vector<No *> filhos();
@@ -23,5 +13,5 @@ public:
     std::string print();
 
 private:
-    Constante valorNo;
+    double valorNo;
 };

@@ -17,18 +17,17 @@ public:
 
 private:
     int gerarRegraProducaoAleatoria(int numVariaveis);
-    No *gerarInicio(int &indInicio, int &indExpr1, int &indExpr2, int &indExpr3, int &indOpUn, int &indOpBin);
-    No *gerarExpr1(int &indInicio, int &indExpr1, int &indExpr2, int &indExpr3, int &indOpUn, int &indOpBin);
-    No *gerarExpr2(int &indInicio, int &indExpr1, int &indExpr2, int &indExpr3, int &indOpUn, int &indOpBin);
-    No *gerarExpr3(int &indInicio, int &indExpr1, int &indExpr2, int &indExpr3, int &indOpUn, int &indOpBin);
-    OperacaoBinaria gerarOpBin(int &indInicio, int &indExpr1, int &indExpr2, int &indExpr3, int &indOpUn, int &indOpBin);
-    OperacaoUnaria gerarOpUn(int &indInicio, int &indExpr1, int &indExpr2, int &indExpr3, int &indOpUn, int &indOpBin);
+    double gerarConstante();
+    No *gerarArvore(int indices[8]);
 
-    std::vector<int> inicio;
-    std::vector<int> expr1;
-    std::vector<int> expr2;
-    std::vector<int> expr3;
-    std::vector<int> operacoesBinarias;
-    std::vector<int> operacoesUnarias;
+    int inicio; // 1 valor
+    int expr1[2]; // 2 valores
+    int expr2[4]; // 4 valores
+    int expr3[8]; // 8 valores
+    int expr4[16]; // 16 valores
+    int expr5[32]; // 32 valores
+    int expr6[64]; // 64 valores
+    double constante[64]; // 64 valores
+    
     int numVariaveis;
 };
