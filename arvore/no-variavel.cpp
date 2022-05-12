@@ -85,3 +85,7 @@ std::string NoVariavel::print()
         return "0";
     }
 }
+
+NoVariavel::~NoVariavel()
+{
+}

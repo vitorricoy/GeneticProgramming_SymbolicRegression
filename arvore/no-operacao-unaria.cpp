@@ -31,13 +31,13 @@ double NoOperacaoUnaria::valor(std::vector<double> &variaveis)
     switch (valorNo)
     {
     case SENO:
-        return std::sin(v);
+        return std::isinf(v) ? std::numeric_limits<double>::infinity() : std::sin(v);
     case COSSENO:
-        return std::cos(v);
+        return std::isinf(v) ? std::numeric_limits<double>::infinity() : std::cos(v);
     case LOG:
-        return v == 0 ? -std::numeric_limits<double>::infinity() : std::log(std::abs(v));
-    case ABS:
-    	return std::abs(v);
+        return v == 0 ? std::numeric_limits<double>::lowest() : std::log(std::abs(v));
+    case EXP:
+        return std::exp(v);
     default:
         return 0;
     }
@@ -57,12 +57,17 @@ std::string NoOperacaoUnaria::print()
     case LOG:
         op = "ln";
         break;
-    case ABS:
-    	op = "abs";
-    	break;
+    case EXP:
+        op = "exp";
+        break;
     default:
         op = "ERRO";
     }
 
     return op + "(" + filho->print() + ")";
+}
+
+NoOperacaoUnaria::~NoOperacaoUnaria()
+{
+    delete filho;
 }

@@ -9,25 +9,26 @@ class Genotipo
 {
 public:
     Genotipo(int n);
-    Genotipo(int n, std::vector<int> inicio, std::vector<int> expr1, std::vector<int> expr2, std::vector<int> expr3, std::vector<int> operacoesBinarias, std::vector<int> operacoesUnarias);
+    Genotipo(int n, int inicio, std::vector<int> expr1, std::vector<int> expr2, std::vector<int> expr3, std::vector<int> expr4, std::vector<int> expr5, std::vector<int> expr6, std::vector<double> constante);
     Genotipo *recombinar(Genotipo *par);
-    void mutar();
     Genotipo *criarMutacao();
+    Genotipo *criarCopia();
     No *converterEmArvore();
 
 private:
+    void mutar();
     int gerarRegraProducaoAleatoria(int numVariaveis);
     double gerarConstante();
-    No *gerarArvore(int indices[8]);
+    No *gerarArvore(int indices[7], int profundidade);
 
-    int inicio; // 1 valor
-    int expr1[2]; // 2 valores
-    int expr2[4]; // 4 valores
-    int expr3[8]; // 8 valores
-    int expr4[16]; // 16 valores
-    int expr5[32]; // 32 valores
-    int expr6[64]; // 64 valores
-    double constante[64]; // 64 valores
-    
+    int inicio;                    // 1 valor
+    std::vector<int> expr1;        // 2 valores
+    std::vector<int> expr2;        // 4 valores
+    std::vector<int> expr3;        // 8 valores
+    std::vector<int> expr4;        // 16 valores
+    std::vector<int> expr5;        // 32 valores
+    std::vector<int> expr6;        // 64 valores
+    std::vector<double> constante; // 64 valores
+
     int numVariaveis;
 };

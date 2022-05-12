@@ -20,6 +20,7 @@ public:
     std::vector<No *> filhos();
     double valor(std::vector<double> &variaveis);
     std::string print();
+    ~NoOperacaoBinaria();
 
 private:
     OperacaoBinaria valorNo;

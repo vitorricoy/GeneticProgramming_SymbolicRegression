@@ -41,6 +41,7 @@ public:
     std::vector<No *> filhos();
     double valor(std::vector<double> &variaveis);
     std::string print();
+    ~NoVariavel();
 
 private:
     Variavel valorNo;

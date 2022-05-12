@@ -6,198 +6,245 @@
 #include "../arvore/no-variavel.h"
 #include "../arvore/no-operacao-binaria.h"
 #include "../arvore/no-operacao-unaria.h"
+#include "../util/aleatorio.h"
+
+#define NUM_OP_BIN 4
+#define NUM_OP_UN 4
 
 Genotipo::Genotipo(int n)
 {
     numVariaveis = n;
-    int numTerminais = n+1;
+    int numTerminais = n + 1;
 
-    /*inicio.push_back(gerarRegraProducaoAleatoria(n));
+    inicio = gerarRegraProducaoAleatoria(n);
 
-    expr1.push_back(gerarRegraProducaoAleatoria(n));
-    expr1.push_back(gerarRegraProducaoAleatoria(n));
+    for (int i = 0; i < 2; i++)
+    {
+        expr1.push_back(gerarRegraProducaoAleatoria(n));
+    }
 
-    expr2.push_back(gerarRegraProducaoAleatoria(n));
-    expr2.push_back(gerarRegraProducaoAleatoria(n));
-    expr2.push_back(gerarRegraProducaoAleatoria(n));
-    expr2.push_back(gerarRegraProducaoAleatoria(n));
+    for (int i = 0; i < 4; i++)
+    {
+        expr2.push_back(gerarRegraProducaoAleatoria(n));
+    }
 
-    expr3.push_back(rand() % numTerminais);
-    expr3.push_back(rand() % numTerminais);
-    expr3.push_back(rand() % numTerminais);
-    expr3.push_back(rand() % numTerminais);
-    expr3.push_back(rand() % numTerminais);
-    expr3.push_back(rand() % numTerminais);
-    expr3.push_back(rand() % numTerminais);
-    expr3.push_back(rand() % numTerminais);
+    for (int i = 0; i < 8; i++)
+    {
+        expr3.push_back(gerarRegraProducaoAleatoria(n));
+    }
 
-    operacoesBinarias.push_back(rand() % 5);
-    operacoesBinarias.push_back(rand() % 5);
-    operacoesBinarias.push_back(rand() % 5);
-    operacoesBinarias.push_back(rand() % 5);
-    operacoesBinarias.push_back(rand() % 5);
-    operacoesBinarias.push_back(rand() % 5);
-    operacoesBinarias.push_back(rand() % 5);
+    for (int i = 0; i < 16; i++)
+    {
+        expr4.push_back(gerarRegraProducaoAleatoria(n));
+    }
 
-    operacoesUnarias.push_back(rand() % 4);
-    operacoesUnarias.push_back(rand() % 4);
-    operacoesUnarias.push_back(rand() % 4);
-    operacoesUnarias.push_back(rand() % 4);
-    operacoesUnarias.push_back(rand() % 4);
-    operacoesUnarias.push_back(rand() % 4);
-    operacoesUnarias.push_back(rand() % 4);
-    
-    constante.push_back(gerarConstante());
-    constante.push_back(gerarConstante());
-    constante.push_back(gerarConstante());
-    constante.push_back(gerarConstante());
-    constante.push_back(gerarConstante());
-    constante.push_back(gerarConstante());
-    constante.push_back(gerarConstante());
-    constante.push_back(gerarConstante());*/
+    for (int i = 0; i < 32; i++)
+    {
+        expr5.push_back(gerarRegraProducaoAleatoria(n));
+    }
+
+    for (int i = 0; i < 64; i++)
+    {
+        expr6.push_back(Aleatorio::intAleatorio(0, numTerminais - 1));
+    }
+
+    for (int i = 0; i < 64; i++)
+    {
+        constante.push_back(gerarConstante());
+    }
 }
 
-Genotipo::Genotipo(int n, std::vector<int> inicio, std::vector<int> expr1, std::vector<int> expr2, std::vector<int> expr3, std::vector<int> operacoesBinarias, std::vector<int> operacoesUnarias)
+Genotipo::Genotipo(int n, int inicio, std::vector<int> expr1, std::vector<int> expr2, std::vector<int> expr3, std::vector<int> expr4, std::vector<int> expr5, std::vector<int> expr6, std::vector<double> constante)
 {
     numVariaveis = n;
     this->inicio = inicio;
     this->expr1 = expr1;
     this->expr2 = expr2;
     this->expr3 = expr3;
-    this->operacoesBinarias = operacoesBinarias;
-    this->operacoesUnarias = operacoesUnarias;
+    this->expr4 = expr4;
+    this->expr5 = expr5;
+    this->expr6 = expr6;
+    this->constante = constante;
 }
 
-double Genotipo::gerarConstante() {
-    double multiplicador = 1;
-    if (rand()%2) {
-        multiplicador = -1;
-    }
-    return multiplicador * ((double)rand()/(double)RAND_MAX);
+double Genotipo::gerarConstante()
+{
+    return Aleatorio::doubleAleatorio(-1, 1);
 }
 
 int Genotipo::gerarRegraProducaoAleatoria(int numVariaveis)
 {
-    int numTerminais = numVariaveis + 1;
-    int op = rand() % 3;
-    if (op == 0)
-    {
-        // Binaria
-        return 0;
-    }
-    if (op == 1)
-    {
-        // Unaria
-        return 1;
-    }
-    return 2 + (rand() % numTerminais);
+    int numTerminais = numVariaveis + 10;
+    return Aleatorio::intAleatorio(0, numTerminais - 1);
 }
 
 Genotipo *Genotipo::recombinar(Genotipo *par)
 {
-    int mascara = 1 + (rand() % 62);
-    std::vector<int> inicio = this->inicio;
-    std::vector<int> expr1 = this->expr1;
-    std::vector<int> expr2 = this->expr2;
-    std::vector<int> expr3 = this->expr3;
-    std::vector<int> operacoesBinarias = this->operacoesBinarias;
-    std::vector<int> operacoesUnarias = this->operacoesUnarias;
+    int mascara = Aleatorio::intAleatorio(1, 255);
+    int novoInicio = inicio;
+    std::vector<int> novaExpr1 = expr1;
+    std::vector<int> novaExpr2 = expr2;
+    std::vector<int> novaExpr3 = expr3;
+    std::vector<int> novaExpr4 = expr4;
+    std::vector<int> novaExpr5 = expr5;
+    std::vector<int> novaExpr6 = expr6;
+    std::vector<double> novaConstante = constante;
 
     if (mascara & 1)
     {
-        operacoesUnarias = par->operacoesUnarias;
+        novaConstante = par->constante;
     }
 
     if (mascara & 2)
     {
-        operacoesBinarias = par->operacoesBinarias;
+        novaExpr6 = par->expr6;
     }
 
     if (mascara & 4)
     {
-        expr3 = par->expr3;
+        novaExpr5 = par->expr5;
     }
 
     if (mascara & 8)
     {
-        expr2 = par->expr3;
+        novaExpr4 = par->expr4;
     }
 
     if (mascara & 16)
     {
-        expr1 = par->expr3;
+        novaExpr3 = par->expr3;
     }
 
     if (mascara & 32)
     {
-        inicio = par->inicio;
+        novaExpr2 = par->expr2;
     }
 
-    return new Genotipo(this->numVariaveis, inicio, expr1, expr2, expr3, operacoesBinarias, operacoesUnarias);
+    if (mascara & 64)
+    {
+        novaExpr1 = par->expr1;
+    }
+
+    if (mascara & 128)
+    {
+        novoInicio = par->inicio;
+    }
+
+    return new Genotipo(this->numVariaveis, novoInicio, novaExpr1, novaExpr2, novaExpr3, novaExpr4, novaExpr5, novaExpr6, novaConstante);
 }
 
 Genotipo *Genotipo::criarMutacao()
 {
-    Genotipo *novoIndividuo = new Genotipo(numVariaveis, inicio, expr1, expr2, expr3, operacoesBinarias, operacoesUnarias);
+    Genotipo *novoIndividuo = new Genotipo(numVariaveis, inicio, expr1, expr2, expr3, expr4, expr5, expr6, constante);
     novoIndividuo->mutar();
+    return novoIndividuo;
+}
+
+Genotipo *Genotipo::criarCopia()
+{
+    Genotipo *novoIndividuo = new Genotipo(numVariaveis, inicio, expr1, expr2, expr3, expr4, expr5, expr6, constante);
     return novoIndividuo;
 }
 
 void Genotipo::mutar()
 {
-    int op1 = rand() % 6;
+    int op1 = Aleatorio::intAleatorio(0, 7);
     switch (op1)
     {
     case 0:
-        inicio[0] = gerarRegraProducaoAleatoria(numVariaveis);
+        inicio = gerarRegraProducaoAleatoria(numVariaveis);
         break;
     case 1:
-        expr1[rand() % 2] = gerarRegraProducaoAleatoria(numVariaveis);
+        expr1[Aleatorio::intAleatorio(0, 1)] = gerarRegraProducaoAleatoria(numVariaveis);
         break;
 
     case 2:
-        expr2[rand() % 4] = gerarRegraProducaoAleatoria(numVariaveis);
+        expr2[Aleatorio::intAleatorio(0, 3)] = gerarRegraProducaoAleatoria(numVariaveis);
         break;
     case 3:
-        expr3[rand() % 8] = rand() % (numVariaveis + 6);
+        expr3[Aleatorio::intAleatorio(0, 7)] = gerarRegraProducaoAleatoria(numVariaveis);
         break;
     case 4:
-        operacoesBinarias[rand() % 7] = rand() % 5;
+        expr4[Aleatorio::intAleatorio(0, 15)] = gerarRegraProducaoAleatoria(numVariaveis);
+        break;
+    case 5:
+        expr5[Aleatorio::intAleatorio(0, 31)] = gerarRegraProducaoAleatoria(numVariaveis);
+        break;
+    case 6:
+        expr6[Aleatorio::intAleatorio(0, 63)] = Aleatorio::intAleatorio(0, numVariaveis + 1);
         break;
     default:
-        operacoesUnarias[rand() % 7] = rand() % 4;
+        constante[Aleatorio::intAleatorio(0, 63)] = gerarConstante();
         break;
     }
 }
 
 No *Genotipo::converterEmArvore()
 {
-    int indices[] = {0, 0, 0, 0, 0, 0, 0, 0};
-    return gerarArvore(indices);
+    int indices[] = {0, 0, 0, 0, 0, 0, 0};
+    return gerarArvore(indices, 0);
 }
 
-No *gerarArvore(int indices[8])
+No *Genotipo::gerarArvore(int indices[7], int profundidade)
 {
-    /*int producao = inicio[indInicio];
-    indInicio++;
-    if (producao == 0)
+    if (profundidade == 6)
     {
-        OperacaoBinaria opBin = gerarOpBin(indInicio, indExpr1, indExpr2, indExpr3, indOpUn, indOpBin);
-        No *filho1 = gerarExpr1(indInicio, indExpr1, indExpr2, indExpr3, indOpUn, indOpBin);
-        No *filho2 = gerarExpr1(indInicio, indExpr1, indExpr2, indExpr3, indOpUn, indOpBin);
-        return new NoOperacaoBinaria(opBin, filho1, filho2);
+        int producao = expr6[indices[5]];
+        indices[5]++;
+        if (producao < numVariaveis)
+        {
+            return new NoVariavel(Variavel(producao));
+        }
+        double valorConstante = constante[indices[6]];
+        indices[6]++;
+        return new NoConstante(valorConstante);
     }
-    if (producao == 1)
+    else
     {
-        OperacaoUnaria opUn = gerarOpUn(indInicio, indExpr1, indExpr2, indExpr3, indOpUn, indOpBin);
-        No *filho = gerarExpr1(indInicio, indExpr1, indExpr2, indExpr3, indOpUn, indOpBin);
-        return new NoOperacaoUnaria(opUn, filho);
+        int producao;
+        switch (profundidade)
+        {
+        case 0:
+            producao = inicio;
+            break;
+        case 1:
+            producao = expr1[indices[0]];
+            indices[0]++;
+            break;
+        case 2:
+            producao = expr2[indices[1]];
+            indices[1]++;
+            break;
+        case 3:
+            producao = expr3[indices[2]];
+            indices[2]++;
+            break;
+        case 4:
+            producao = expr4[indices[3]];
+            indices[3]++;
+            break;
+        default:
+            producao = expr5[indices[4]];
+            indices[4]++;
+            break;
+        }
+        if (producao >= 0 && producao <= 3)
+        {
+            No *filho1 = gerarArvore(indices, profundidade + 1);
+            No *filho2 = gerarArvore(indices, profundidade + 1);
+            return new NoOperacaoBinaria(OperacaoBinaria(producao), filho1, filho2);
+        }
+        if (producao >= 4 && producao <= 7)
+        {
+            No *filho = gerarArvore(indices, profundidade + 1);
+            return new NoOperacaoUnaria(OperacaoUnaria(producao - 4), filho);
+        }
+        if (producao >= 8 && producao < 8 + numVariaveis)
+        {
+            return new NoVariavel(Variavel(producao - 8));
+        }
+        double valorConstante = constante[indices[6]];
+        indices[6]++;
+        return new NoConstante(valorConstante);
     }
-    producao -= 2;
-    if (producao >= numVariaveis)
-    {
-        producao -= numVariaveis;
-        return new NoConstante(Constante(producao));
-    }
-    return new NoVariavel(Variavel(producao));*/
 }

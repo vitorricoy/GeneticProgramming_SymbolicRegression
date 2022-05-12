@@ -7,7 +7,7 @@ enum OperacaoUnaria
     SENO,
     COSSENO,
     LOG,
-    ABS
+    EXP
 };
 
 class NoOperacaoUnaria : public No
@@ -19,6 +19,7 @@ public:
     std::vector<No *> filhos();
     double valor(std::vector<double> &variaveis);
     std::string print();
+    ~NoOperacaoUnaria();
 
 private:
     OperacaoUnaria valorNo;

@@ -4,13 +4,15 @@
 #include "calculadora-fitness.h"
 #include "dados-treinamento.h"
 #include "../arvore/no.h"
+#include "../genotipo/genotipo.h"
 
 CalculadoraFitness::CalculadoraFitness(DadosTreinamento *d)
 {
     dados = d;
 }
-double CalculadoraFitness::calcularFitness(No *individuo)
+double CalculadoraFitness::calcularFitness(Genotipo *genotipo)
 {
+    No *individuo = genotipo->converterEmArvore();
     std::vector<std::pair<std::vector<double>, double>> dadosTreino = dados->dados();
     double somatorioNumerador = 0.0;
     double somatorioValoresPrevistos = 0.0;
@@ -39,5 +41,6 @@ double CalculadoraFitness::calcularFitness(No *individuo)
     {
         return somatorioNumerador;
     }
+    delete individuo;
     return std::sqrt(somatorioNumerador / somatorioDenominador);
 }

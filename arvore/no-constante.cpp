@@ -31,3 +31,7 @@ std::string NoConstante::print()
 {
     return std::to_string(valorNo);
 }
+
+NoConstante::~NoConstante()
+{
+}

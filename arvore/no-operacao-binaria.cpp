@@ -41,7 +41,7 @@ double NoOperacaoBinaria::valor(std::vector<double> &variaveis)
     case DIVISAO:
         return v2 == 0 ? std::numeric_limits<double>::infinity() : v1 / v2;
     case EXPONENCIACAO:
-        return std::pow(v1, v2);
+        return v1 == 0 ? 0 : std::pow(std::abs(v1), v2);
     default:
         return 0;
     }
@@ -72,4 +72,10 @@ std::string NoOperacaoBinaria::print()
     }
 
     return "(" + filho1->print() + " " + op + " " + filho2->print() + ")";
+}
+
+NoOperacaoBinaria::~NoOperacaoBinaria()
+{
+    delete filho1;
+    delete filho2;
 }

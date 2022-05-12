@@ -13,4 +13,5 @@ public:
     virtual std::vector<No *> filhos() = 0;
     virtual double valor(std::vector<double> &variaveis) = 0;
     virtual std::string print() = 0;
+    virtual ~No() {}
 };

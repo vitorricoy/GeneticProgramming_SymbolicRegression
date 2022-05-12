@@ -1,9 +1,9 @@
 CC=g++
-CFLAGS=-Wall -Wextra -Wno-unused-parameter -g
+CFLAGS=-Wall -Wextra -Wno-unused-parameter -g -pthread
 EXEC=./tp1
 
-$(EXEC): main.cpp no-constante.o no-operacao-binaria.o no-operacao-unaria.o no-variavel.o no.o calculadora-fitness.o dados-treinamento.o genotipo.o
-	$(CC) $(CFLAGS) main.cpp no-constante.o no-operacao-binaria.o no-operacao-unaria.o no-variavel.o calculadora-fitness.o dados-treinamento.o genotipo.o -o $(EXEC)
+$(EXEC): main.cpp no-constante.o no-operacao-binaria.o no-operacao-unaria.o no-variavel.o no.o calculadora-fitness.o dados-treinamento.o genotipo.o aleatorio.o
+	$(CC) $(CFLAGS) main.cpp no-constante.o no-operacao-binaria.o no-operacao-unaria.o no-variavel.o calculadora-fitness.o dados-treinamento.o genotipo.o aleatorio.o -o $(EXEC)
 
 no-constante.o: arvore/no-constante.cpp
 	$(CC) $(CFLAGS) -c arvore/no-constante.cpp -o no-constante.o
@@ -28,5 +28,8 @@ dados-treinamento.o:
 genotipo.o:
 	$(CC) $(CFLAGS) -c genotipo/genotipo.cpp -o genotipo.o
 
+aleatorio.o:
+	$(CC) $(CFLAGS) -c util/aleatorio.cpp -o aleatorio.o
+
 clean:
-	rm -rf no-constante.o no-operacao-binaria.o no-operacao-unaria.o no-variavel.o calculadora-fitness.o dados-treinamento.o genotipo.o
+	rm -rf no-constante.o no-operacao-binaria.o no-operacao-unaria.o no-variavel.o calculadora-fitness.o dados-treinamento.o genotipo.o aleatorio.o
