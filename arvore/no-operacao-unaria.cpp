@@ -5,8 +5,10 @@
 
 NoOperacaoUnaria::NoOperacaoUnaria(OperacaoUnaria o, No *f)
 {
+    noPai = nullptr;
     valorNo = o;
     filho = f;
+    altura = calcularAltura(f);
 }
 
 int NoOperacaoUnaria::numeroFilhos()
@@ -31,11 +33,11 @@ double NoOperacaoUnaria::valor(std::vector<double> &variaveis)
     switch (valorNo)
     {
     case SENO:
-        return std::isinf(v) ? std::numeric_limits<double>::infinity() : std::sin(v);
+        return std::sin(v);
     case COSSENO:
-        return std::isinf(v) ? std::numeric_limits<double>::infinity() : std::cos(v);
+        return std::cos(v);
     case LOG:
-        return v == 0 ? std::numeric_limits<double>::lowest() : std::log(std::abs(v));
+        return v == 0 ? 0 : std::log(std::abs(v));
     case EXP:
         return std::exp(v);
     default:
@@ -70,4 +72,29 @@ std::string NoOperacaoUnaria::print()
 NoOperacaoUnaria::~NoOperacaoUnaria()
 {
     delete filho;
+}
+
+int NoOperacaoUnaria::calcularAltura(No *f)
+{
+    return 1 + f->altura;
+}
+
+No *NoOperacaoUnaria::pai()
+{
+    return noPai;
+}
+
+void NoOperacaoUnaria::setPai(No *p)
+{
+    noPai = p;
+}
+
+OperacaoUnaria NoOperacaoUnaria::conteudoNo()
+{
+    return valorNo;
+}
+
+void NoOperacaoUnaria::setFilho(No *f)
+{
+    filho = f;
 }

@@ -41,8 +41,13 @@ public:
     std::vector<No *> filhos();
     double valor(std::vector<double> &variaveis);
     std::string print();
+    int calcularAltura();
     ~NoVariavel();
+    No *pai();
+    void setPai(No *p);
+    Variavel conteudoNo();
 
 private:
     Variavel valorNo;
+    No *noPai;
 };

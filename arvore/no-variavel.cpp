@@ -2,7 +2,9 @@
 
 NoVariavel::NoVariavel(Variavel v)
 {
+    noPai = nullptr;
     valorNo = v;
+    altura = calcularAltura();
 }
 
 int NoVariavel::numeroFilhos()
@@ -88,4 +90,24 @@ std::string NoVariavel::print()
 
 NoVariavel::~NoVariavel()
 {
+}
+
+int NoVariavel::calcularAltura()
+{
+    return 1;
+}
+
+No *NoVariavel::pai()
+{
+    return noPai;
+}
+
+void NoVariavel::setPai(No *p)
+{
+    noPai = p;
+}
+
+Variavel NoVariavel::conteudoNo()
+{
+    return valorNo;
 }

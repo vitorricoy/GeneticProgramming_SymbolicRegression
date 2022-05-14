@@ -5,9 +5,11 @@
 
 NoOperacaoBinaria::NoOperacaoBinaria(OperacaoBinaria o, No *f1, No *f2)
 {
+    noPai = nullptr;
     valorNo = o;
     filho1 = f1;
     filho2 = f2;
+    altura = calcularAltura(f1, f2);
 }
 
 int NoOperacaoBinaria::numeroFilhos()
@@ -39,9 +41,7 @@ double NoOperacaoBinaria::valor(std::vector<double> &variaveis)
     case MULTIPLICACAO:
         return v1 * v2;
     case DIVISAO:
-        return v2 == 0 ? std::numeric_limits<double>::infinity() : v1 / v2;
-    case EXPONENCIACAO:
-        return v1 == 0 ? 0 : std::pow(std::abs(v1), v2);
+        return v2 == 0 ? 1 : v1 / v2;
     default:
         return 0;
     }
@@ -64,9 +64,6 @@ std::string NoOperacaoBinaria::print()
     case DIVISAO:
         op = "/";
         break;
-    case EXPONENCIACAO:
-        op = "^";
-        break;
     default:
         op = "ERRO";
     }
@@ -78,4 +75,40 @@ NoOperacaoBinaria::~NoOperacaoBinaria()
 {
     delete filho1;
     delete filho2;
+}
+
+int NoOperacaoBinaria::calcularAltura(No *f1, No *f2)
+{
+    int alt1 = 1 + f1->altura;
+    int alt2 = 1 + f2->altura;
+    if (alt1 > alt2)
+    {
+        return alt1;
+    }
+    return alt2;
+}
+
+No *NoOperacaoBinaria::pai()
+{
+    return noPai;
+}
+
+void NoOperacaoBinaria::setPai(No *p)
+{
+    noPai = p;
+}
+
+OperacaoBinaria NoOperacaoBinaria::conteudoNo()
+{
+    return valorNo;
+}
+
+void NoOperacaoBinaria::setFilho1(No *f)
+{
+    filho1 = f;
+}
+
+void NoOperacaoBinaria::setFilho2(No *f)
+{
+    filho2 = f;
 }

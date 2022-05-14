@@ -4,7 +4,9 @@
 
 NoConstante::NoConstante(double c)
 {
+    noPai = nullptr;
     valorNo = c;
+    altura = calcularAltura();
 }
 
 int NoConstante::numeroFilhos()
@@ -34,4 +36,24 @@ std::string NoConstante::print()
 
 NoConstante::~NoConstante()
 {
+}
+
+int NoConstante::calcularAltura()
+{
+    return 1;
+}
+
+No *NoConstante::pai()
+{
+    return noPai;
+}
+
+void NoConstante::setPai(No *p)
+{
+    noPai = p;
+}
+
+double NoConstante::conteudoNo()
+{
+    return valorNo;
 }

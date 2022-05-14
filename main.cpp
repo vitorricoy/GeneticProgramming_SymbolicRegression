@@ -6,23 +6,23 @@
 #include <limits>
 #include <thread>
 
-#include "genotipo/genotipo.h"
+#include "genotipo/genotipo-arvore.h"
 #include "fitness/dados-treinamento.h"
 #include "fitness/calculadora-fitness.h"
 #include "util/aleatorio.h"
 
-#define PM 0.3
-#define PR 0.69
-#define TAM_POP 10
-#define NUM_GER 10
+#define PM 1
+#define PR 0
+#define TAM_POP 500
+#define NUM_GER 500
 
 double fitness[TAM_POP];
-Genotipo *individuos[2][TAM_POP];
+GenotipoArvore *individuos[2][TAM_POP];
 CalculadoraFitness *calculadora;
 int indiceIndividuos[TAM_POP];
-bool operadoresElitistas = true;
+bool operadoresElitistas = false;
 
-int tamanhoTorneio = 3;
+int tamanhoTorneio = 2;
 
 void atualizarFitnessThread(unsigned i, int geracao)
 {
@@ -31,16 +31,17 @@ void atualizarFitnessThread(unsigned i, int geracao)
 
 void atualizarFitness(int geracao)
 {
-    std::vector<std::thread> threads;
+    // std::vector<std::thread> threads;
     for (unsigned i = 0; i < TAM_POP; i++)
     {
-        threads.emplace_back(atualizarFitnessThread, i, geracao);
+        //   threads.emplace_back(atualizarFitnessThread, i, geracao);
+        atualizarFitnessThread(i, geracao);
     }
 
-    for (std::thread &t : threads)
-    {
-        t.join();
-    }
+    // for (std::thread &t : threads)
+    // {
+    //     t.join();
+    // }
 }
 
 int selecionaUm()
@@ -67,10 +68,10 @@ void selecao(unsigned i, int geracao)
         int indPai = selecionaUm();
         int indMae = selecionaUm();
         //  Seleciona
-        Genotipo *pai = individuos[geracao % 2][indPai];
-        Genotipo *mae = individuos[geracao % 2][indMae];
+        GenotipoArvore *pai = individuos[geracao % 2][indPai];
+        GenotipoArvore *mae = individuos[geracao % 2][indMae];
 
-        Genotipo *filho = pai->recombinar(mae);
+        GenotipoArvore *filho = pai->recombinar(mae);
 
         if (operadoresElitistas)
         {
@@ -101,10 +102,10 @@ void selecao(unsigned i, int geracao)
     else
     {
         int indIndividuo = selecionaUm();
-        Genotipo *individuo = individuos[geracao % 2][indIndividuo];
+        GenotipoArvore *individuo = individuos[geracao % 2][indIndividuo];
         if (Aleatorio::doubleAleatorio(0, 1) < PM)
         {
-            Genotipo *mutacao = individuo->criarMutacao();
+            GenotipoArvore *mutacao = individuo->criarMutacao();
             if (operadoresElitistas)
             {
                 double fitnessMutacao = calculadora->calcularFitness(mutacao);
@@ -136,7 +137,7 @@ int main()
     calculadora = new CalculadoraFitness(dadosTreinamento);
     for (int i = 0; i < TAM_POP; i++)
     {
-        Genotipo *novo = new Genotipo(dadosTreinamento->dimensao());
+        GenotipoArvore *novo = new GenotipoArvore(dadosTreinamento->dimensao());
         individuos[0][i] = novo;
         indiceIndividuos[i] = i;
     }
@@ -147,15 +148,16 @@ int main()
         std::vector<std::thread> threads;
         for (unsigned i = 0; i < TAM_POP; i++)
         {
-            threads.emplace_back(selecao, i, geracao);
+            selecao(i, geracao);
+            // threads.emplace_back(selecao, i, geracao);
         }
 
-        for (std::thread &t : threads)
-        {
-            t.join();
-        }
+        // for (std::thread &t : threads)
+        // {
+        //     t.join();
+        // }
 
-        for (Genotipo *&g : individuos[geracao % 2])
+        for (GenotipoArvore *&g : individuos[geracao % 2])
         {
             delete g;
         }
@@ -171,12 +173,11 @@ int main()
             indMelhor = i;
         }
     }
-    No *arvore = individuos[NUM_GER % 2][indMelhor]->converterEmArvore();
+    No *arvore = individuos[NUM_GER % 2][indMelhor]->obterRaiz();
     std::cout << arvore->print() << "\n";
     std::cout << fitnessMelhor << "\n";
-    delete arvore;
 
-    for (Genotipo *&g : individuos[NUM_GER % 2])
+    for (GenotipoArvore *&g : individuos[NUM_GER % 2])
     {
         delete g;
     }

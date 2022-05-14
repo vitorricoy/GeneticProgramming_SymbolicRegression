@@ -75,7 +75,16 @@ double Genotipo::gerarConstante()
 int Genotipo::gerarRegraProducaoAleatoria(int numVariaveis)
 {
     int numTerminais = numVariaveis + 10;
-    return Aleatorio::intAleatorio(0, numTerminais - 1);
+    int tipo = Aleatorio::intAleatorio(0, 2);
+    if (tipo == 0)
+    {
+        return Aleatorio::intAleatorio(0, NUM_OP_BIN - 1);
+    }
+    if (tipo == 0)
+    {
+        return NUM_OP_BIN + Aleatorio::intAleatorio(0, NUM_OP_UN - 1);
+    }
+    return NUM_OP_BIN + NUM_OP_UN + Aleatorio::intAleatorio(0, numVariaveis + 1);
 }
 
 Genotipo *Genotipo::recombinar(Genotipo *par)
