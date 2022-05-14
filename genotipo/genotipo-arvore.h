@@ -18,7 +18,7 @@ public:
     No *copiarArvore(No *noAtual);
 
 private:
-    void mutar();
+    No *mutar();
     No *gerarArvoreAleatoria(int numVar, int profundidade);
     No *raiz;
     int numeroVariaveis;

@@ -4,7 +4,7 @@ NoVariavel::NoVariavel(Variavel v)
 {
     noPai = nullptr;
     valorNo = v;
-    altura = calcularAltura();
+    tamSubArvore = calcularTamSubArvore();
 }
 
 int NoVariavel::numeroFilhos()
@@ -92,7 +92,7 @@ NoVariavel::~NoVariavel()
 {
 }
 
-int NoVariavel::calcularAltura()
+int NoVariavel::calcularTamSubArvore()
 {
     return 1;
 }
@@ -110,4 +110,9 @@ void NoVariavel::setPai(No *p)
 Variavel NoVariavel::conteudoNo()
 {
     return valorNo;
+}
+
+TiposNo NoVariavel::getTipo()
+{
+    return TiposNo::VARIAVEL;
 }

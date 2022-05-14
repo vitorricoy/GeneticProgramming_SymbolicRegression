@@ -5,24 +5,25 @@
 #include <random>
 #include <limits>
 #include <thread>
+#include <mutex>
 
 #include "genotipo/genotipo-arvore.h"
 #include "fitness/dados-treinamento.h"
 #include "fitness/calculadora-fitness.h"
 #include "util/aleatorio.h"
 
-#define PM 1
-#define PR 0
-#define TAM_POP 500
-#define NUM_GER 500
+double PM = 0.5;
+double PR = 0.5;
+int TAM_POP = 100;
+int NUM_GER = 100;
+int TAMANHO_TORNEIO = 2;
+int OPERADORES_ELITISTAS = 0;
 
-double fitness[TAM_POP];
-GenotipoArvore *individuos[2][TAM_POP];
+double fitness[1000];
+GenotipoArvore *individuos[2][1000];
 CalculadoraFitness *calculadora;
-int indiceIndividuos[TAM_POP];
-bool operadoresElitistas = false;
-
-int tamanhoTorneio = 2;
+int indiceIndividuos[1000];
+std::mutex selecaoMutex;
 
 void atualizarFitnessThread(unsigned i, int geracao)
 {
@@ -31,26 +32,26 @@ void atualizarFitnessThread(unsigned i, int geracao)
 
 void atualizarFitness(int geracao)
 {
-    // std::vector<std::thread> threads;
-    for (unsigned i = 0; i < TAM_POP; i++)
+    std::vector<std::thread> threads;
+    for (int i = 0; i < TAM_POP; i++)
     {
-        //   threads.emplace_back(atualizarFitnessThread, i, geracao);
-        atualizarFitnessThread(i, geracao);
+        threads.emplace_back(atualizarFitnessThread, i, geracao);
+        // atualizarFitnessThread(i, geracao);
     }
 
-    // for (std::thread &t : threads)
-    // {
-    //     t.join();
-    // }
+    for (std::thread &t : threads)
+    {
+        t.join();
+    }
 }
 
 int selecionaUm()
 {
+    selecaoMutex.lock();
     Aleatorio::shuffle(indiceIndividuos, TAM_POP);
     double fitnessMelhor = std::numeric_limits<double>::max();
     int indiceMelhor = indiceIndividuos[0];
-    ;
-    for (int j = 0; j < tamanhoTorneio; j++)
+    for (int j = 0; j < TAMANHO_TORNEIO; j++)
     {
         if (fitness[indiceIndividuos[j]] < fitnessMelhor)
         {
@@ -58,6 +59,7 @@ int selecionaUm()
             indiceMelhor = indiceIndividuos[j];
         }
     }
+    selecaoMutex.unlock();
     return indiceMelhor;
 }
 
@@ -73,7 +75,7 @@ void selecao(unsigned i, int geracao)
 
         GenotipoArvore *filho = pai->recombinar(mae);
 
-        if (operadoresElitistas)
+        if (OPERADORES_ELITISTAS)
         {
             // Implementa operadores elitistas
             double fitnessFilho = calculadora->calcularFitness(filho);
@@ -106,7 +108,7 @@ void selecao(unsigned i, int geracao)
         if (Aleatorio::doubleAleatorio(0, 1) < PM)
         {
             GenotipoArvore *mutacao = individuo->criarMutacao();
-            if (operadoresElitistas)
+            if (OPERADORES_ELITISTAS)
             {
                 double fitnessMutacao = calculadora->calcularFitness(mutacao);
                 if (fitnessMutacao <= fitness[indIndividuo])
@@ -131,8 +133,20 @@ void selecao(unsigned i, int geracao)
     }
 }
 
-int main()
+int main(int argc, char **argv)
 {
+    if (argc == 7)
+    {
+        PM = atof(argv[1]);
+        PR = atof(argv[2]);
+        TAM_POP = atoi(argv[3]);
+        NUM_GER = atoi(argv[4]);
+        TAMANHO_TORNEIO = atoi(argv[5]);
+        OPERADORES_ELITISTAS = atoi(argv[6]);
+    }
+
+    std::cout << PM << " " << PR << " " << TAM_POP << " " << NUM_GER << " " << TAMANHO_TORNEIO << " " << OPERADORES_ELITISTAS << std::endl;
+
     DadosTreinamento *dadosTreinamento = new DadosTreinamento("datasets/synth1/synth1-train.csv");
     calculadora = new CalculadoraFitness(dadosTreinamento);
     for (int i = 0; i < TAM_POP; i++)
@@ -146,16 +160,16 @@ int main()
     {
         atualizarFitness(geracao);
         std::vector<std::thread> threads;
-        for (unsigned i = 0; i < TAM_POP; i++)
+        for (int i = 0; i < TAM_POP; i++)
         {
-            selecao(i, geracao);
-            // threads.emplace_back(selecao, i, geracao);
+            // selecao(i, geracao);
+            threads.emplace_back(selecao, i, geracao);
         }
 
-        // for (std::thread &t : threads)
-        // {
-        //     t.join();
-        // }
+        for (std::thread &t : threads)
+        {
+            t.join();
+        }
 
         for (GenotipoArvore *&g : individuos[geracao % 2])
         {
@@ -165,7 +179,7 @@ int main()
     atualizarFitness(NUM_GER);
     int indMelhor = -1;
     double fitnessMelhor = std::numeric_limits<double>::max();
-    for (unsigned i = 0; i < TAM_POP; i++)
+    for (int i = 0; i < TAM_POP; i++)
     {
         if (fitnessMelhor > fitness[i])
         {

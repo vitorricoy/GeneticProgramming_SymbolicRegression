@@ -8,7 +8,7 @@ NoOperacaoUnaria::NoOperacaoUnaria(OperacaoUnaria o, No *f)
     noPai = nullptr;
     valorNo = o;
     filho = f;
-    altura = calcularAltura(f);
+    tamSubArvore = calcularTamSubArvore(f);
 }
 
 int NoOperacaoUnaria::numeroFilhos()
@@ -74,9 +74,9 @@ NoOperacaoUnaria::~NoOperacaoUnaria()
     delete filho;
 }
 
-int NoOperacaoUnaria::calcularAltura(No *f)
+int NoOperacaoUnaria::calcularTamSubArvore(No *f)
 {
-    return 1 + f->altura;
+    return 1 + f->tamSubArvore;
 }
 
 No *NoOperacaoUnaria::pai()
@@ -97,4 +97,9 @@ OperacaoUnaria NoOperacaoUnaria::conteudoNo()
 void NoOperacaoUnaria::setFilho(No *f)
 {
     filho = f;
+}
+
+TiposNo NoOperacaoUnaria::getTipo()
+{
+    return TiposNo::UNARIA;
 }

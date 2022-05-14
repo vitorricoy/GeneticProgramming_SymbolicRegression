@@ -15,22 +15,22 @@ double CalculadoraFitness::calcularFitness(GenotipoArvore *genotipo)
     No *individuo = genotipo->obterRaiz();
     std::vector<std::pair<std::vector<double>, double>> dadosTreino = dados->dados();
     double somatorioNumerador = 0.0;
-    double somatorioValoresPrevistos = 0.0;
+    double somatorioValoresReais = 0.0;
 
     for (std::pair<std::vector<double>, double> casoTreino : dadosTreino)
     {
         double valorPrevisto = individuo->valor(casoTreino.first);
         double valorReal = casoTreino.second;
         somatorioNumerador += (valorReal - valorPrevisto) * (valorReal - valorPrevisto);
-        somatorioValoresPrevistos += valorPrevisto;
+        somatorioValoresReais += valorReal;
     }
 
-    double mediaValoresPrevistos = somatorioValoresPrevistos / dadosTreino.size();
+    double mediaValoresReais = somatorioValoresReais / dadosTreino.size();
 
     double somatorioDenominador = 0.0;
     for (unsigned i = 0; i < dadosTreino.size(); i++)
     {
-        somatorioDenominador += (dadosTreino[i].second - mediaValoresPrevistos) * (dadosTreino[i].second - mediaValoresPrevistos);
+        somatorioDenominador += (dadosTreino[i].second - mediaValoresReais) * (dadosTreino[i].second - mediaValoresReais);
     }
 
     if (somatorioDenominador == 0)

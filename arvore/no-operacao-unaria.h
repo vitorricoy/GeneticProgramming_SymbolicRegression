@@ -19,12 +19,13 @@ public:
     std::vector<No *> filhos();
     double valor(std::vector<double> &variaveis);
     std::string print();
-    int calcularAltura(No *filho);
+    int calcularTamSubArvore(No *filho);
     ~NoOperacaoUnaria();
     No *pai();
     void setPai(No *p);
     OperacaoUnaria conteudoNo();
     void setFilho(No *f);
+    TiposNo getTipo();
 
 private:
     OperacaoUnaria valorNo;

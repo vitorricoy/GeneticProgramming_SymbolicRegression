@@ -2,6 +2,7 @@
 #include <random>
 #include <ctime>
 #include <vector>
+#include <mutex>
 
 class Aleatorio
 {
@@ -12,4 +13,5 @@ public:
 
 private:
     static std::mt19937 gerador;
+    static std::mutex mutex;
 };

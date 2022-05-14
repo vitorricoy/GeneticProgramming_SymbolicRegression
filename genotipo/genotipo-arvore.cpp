@@ -16,6 +16,7 @@ GenotipoArvore::GenotipoArvore(int n)
 {
     numeroVariaveis = n;
     raiz = gerarArvoreAleatoria(n, 0);
+    preencherListaNos(raiz);
 }
 
 No *GenotipoArvore::gerarArvoreAleatoria(int numVar, int profundidade)
@@ -28,13 +29,11 @@ No *GenotipoArvore::gerarArvoreAleatoria(int numVar, int profundidade)
         {
             // Variavel
             No *no = new NoVariavel(Variavel(Aleatorio::intAleatorio(0, numVar - 1)));
-            nos.push_back(no);
             return no;
         }
         else
         {
             No *no = new NoConstante(Aleatorio::doubleAleatorio(-1, 1));
-            nos.push_back(no);
             return no;
         }
     }
@@ -45,7 +44,6 @@ No *GenotipoArvore::gerarArvoreAleatoria(int numVar, int profundidade)
         No *f1 = gerarArvoreAleatoria(numVar, profundidade + 1);
         No *f2 = gerarArvoreAleatoria(numVar, profundidade + 1);
         No *no = new NoOperacaoBinaria(OperacaoBinaria(Aleatorio::intAleatorio(0, NUM_OP_BIN - 1)), f1, f2);
-        nos.push_back(no);
         f1->setPai(no);
         f2->setPai(no);
         return no;
@@ -54,18 +52,15 @@ No *GenotipoArvore::gerarArvoreAleatoria(int numVar, int profundidade)
     {
         No *f = gerarArvoreAleatoria(numVar, profundidade + 1);
         No *no = new NoOperacaoUnaria(OperacaoUnaria(Aleatorio::intAleatorio(0, NUM_OP_UN - 1)), f);
-        nos.push_back(no);
         f->setPai(no);
         return no;
     }
     if (operacaoBinOperacaoUnConstanteOuVariavel == 2)
     {
         No *no = new NoVariavel(Variavel(Aleatorio::intAleatorio(0, numVar - 1)));
-        nos.push_back(no);
         return no;
     }
     No *no = new NoConstante(Aleatorio::doubleAleatorio(-1, 1));
-    nos.push_back(no);
     return no;
 }
 
@@ -79,32 +74,18 @@ GenotipoArvore::GenotipoArvore(int n, No *r)
 void GenotipoArvore::preencherListaNos(No *noAtual)
 {
     nos.push_back(noAtual);
-    if (dynamic_cast<NoOperacaoBinaria *>(noAtual) != nullptr)
+    for (unsigned i = 0; i < noAtual->filhos().size(); i++)
     {
-        NoOperacaoBinaria *no = dynamic_cast<NoOperacaoBinaria *>(noAtual);
-        preencherListaNos(no->filhos()[0]);
-        preencherListaNos(no->filhos()[1]);
-    }
-    else if (dynamic_cast<NoOperacaoUnaria *>(noAtual) != nullptr)
-    {
-        NoOperacaoUnaria *no = dynamic_cast<NoOperacaoUnaria *>(noAtual);
-        preencherListaNos(no->filhos()[0]);
+        preencherListaNos(noAtual->filhos()[i]);
     }
 }
 
-void GenotipoArvore::preencherListaNos(No *noAtual, std::vector<No *> &nos)
+void GenotipoArvore::preencherListaNos(No *noAtual, std::vector<No *> &listaNos)
 {
-    nos.push_back(noAtual);
-    if (dynamic_cast<NoOperacaoBinaria *>(noAtual) != nullptr)
+    listaNos.push_back(noAtual);
+    for (unsigned i = 0; i < noAtual->filhos().size(); i++)
     {
-        NoOperacaoBinaria *no = dynamic_cast<NoOperacaoBinaria *>(noAtual);
-        preencherListaNos(no->filhos()[0], nos);
-        preencherListaNos(no->filhos()[1], nos);
-    }
-    else if (dynamic_cast<NoOperacaoUnaria *>(noAtual) != nullptr)
-    {
-        NoOperacaoUnaria *no = dynamic_cast<NoOperacaoUnaria *>(noAtual);
-        preencherListaNos(no->filhos()[0], nos);
+        preencherListaNos(noAtual->filhos()[i], listaNos);
     }
 }
 
@@ -125,15 +106,17 @@ GenotipoArvore *GenotipoArvore::recombinar(GenotipoArvore *par)
     std::vector<No *> possiveis;
     for (No *n : par->nos)
     {
-        if (n->altura <= tamMax)
+        if (n->tamSubArvore <= tamMax)
         {
             possiveis.push_back(n);
         }
     }
+
     if (possiveis.empty())
     {
         std::cout << "POSSIVEIS VAZIO\n";
     }
+
     No *escolhido2 = possiveis[Aleatorio::intAleatorio(0, possiveis.size() - 1)];
 
     No *copiaNovaSubarvore = copiarArvore(escolhido2);
@@ -146,7 +129,7 @@ GenotipoArvore *GenotipoArvore::recombinar(GenotipoArvore *par)
     }
     copiaNovaSubarvore->setPai(paiEscolhido);
 
-    if (dynamic_cast<NoOperacaoBinaria *>(paiEscolhido) != nullptr)
+    if (paiEscolhido->getTipo() == TiposNo::BINARIA)
     {
         NoOperacaoBinaria *no = dynamic_cast<NoOperacaoBinaria *>(paiEscolhido);
         if (no->filhos()[0] == escolhido1)
@@ -158,7 +141,7 @@ GenotipoArvore *GenotipoArvore::recombinar(GenotipoArvore *par)
             no->setFilho2(copiaNovaSubarvore);
         }
     }
-    else if (dynamic_cast<NoOperacaoUnaria *>(paiEscolhido) != nullptr)
+    else if (paiEscolhido->getTipo() == TiposNo::UNARIA)
     {
         NoOperacaoUnaria *no = dynamic_cast<NoOperacaoUnaria *>(paiEscolhido);
         if (no->filhos()[0] == escolhido1)
@@ -169,19 +152,23 @@ GenotipoArvore *GenotipoArvore::recombinar(GenotipoArvore *par)
 
     delete escolhido1;
 
-    return new GenotipoArvore(numeroVariaveis, copia);
+    No *copiaFinal = copiarArvore(copia);
+    delete copia;
+    return new GenotipoArvore(numeroVariaveis, copiaFinal);
 }
 
 GenotipoArvore *GenotipoArvore::criarMutacao()
 {
-    GenotipoArvore *copia = criarCopia();
-    copia->mutar();
-    return copia;
+    No *mutacao = mutar();
+    return new GenotipoArvore(numeroVariaveis, mutacao);
 }
 
-void GenotipoArvore::mutar()
+No *GenotipoArvore::mutar()
 {
-    No *escolhido = nos[Aleatorio::intAleatorio(0, nos.size() - 1)];
+    No *copia = copiarArvore(raiz);
+    std::vector<No *> nosCopia;
+    preencherListaNos(copia, nosCopia);
+    No *escolhido = nosCopia[Aleatorio::intAleatorio(0, nosCopia.size() - 1)];
     No *temp = escolhido;
     int nivel = -1;
     while (temp != nullptr)
@@ -196,11 +183,12 @@ void GenotipoArvore::mutar()
 
     if (paiEscolhido == nullptr)
     {
-        raiz = novaSubarvore;
+        delete escolhido;
+        return novaSubarvore;
     }
     else
     {
-        if (dynamic_cast<NoOperacaoBinaria *>(paiEscolhido) != nullptr)
+        if (paiEscolhido->getTipo() == TiposNo::BINARIA)
         {
             NoOperacaoBinaria *no = dynamic_cast<NoOperacaoBinaria *>(paiEscolhido);
             if (no->filhos()[0] == escolhido)
@@ -212,7 +200,7 @@ void GenotipoArvore::mutar()
                 no->setFilho2(novaSubarvore);
             }
         }
-        else if (dynamic_cast<NoOperacaoUnaria *>(paiEscolhido) != nullptr)
+        else if (paiEscolhido->getTipo() == TiposNo::UNARIA)
         {
             NoOperacaoUnaria *no = dynamic_cast<NoOperacaoUnaria *>(paiEscolhido);
             if (no->filhos()[0] == escolhido)
@@ -223,6 +211,10 @@ void GenotipoArvore::mutar()
     }
 
     delete escolhido;
+
+    No *copiaFinal = copiarArvore(copia);
+    delete copia;
+    return copiaFinal;
 }
 
 GenotipoArvore *GenotipoArvore::criarCopia()
@@ -233,7 +225,7 @@ GenotipoArvore *GenotipoArvore::criarCopia()
 
 No *GenotipoArvore::copiarArvore(No *noAtual)
 {
-    if (dynamic_cast<NoOperacaoBinaria *>(noAtual) != nullptr)
+    if (noAtual->getTipo() == TiposNo::BINARIA)
     {
         NoOperacaoBinaria *no = dynamic_cast<NoOperacaoBinaria *>(noAtual);
         No *f1 = copiarArvore(no->filhos()[0]);
@@ -243,7 +235,7 @@ No *GenotipoArvore::copiarArvore(No *noAtual)
         f2->setPai(novoNo);
         return novoNo;
     }
-    else if (dynamic_cast<NoOperacaoUnaria *>(noAtual) != nullptr)
+    else if (noAtual->getTipo() == TiposNo::UNARIA)
     {
         NoOperacaoUnaria *no = dynamic_cast<NoOperacaoUnaria *>(noAtual);
         No *f = copiarArvore(no->filhos()[0]);
@@ -251,12 +243,12 @@ No *GenotipoArvore::copiarArvore(No *noAtual)
         f->setPai(novoNo);
         return novoNo;
     }
-    else if (dynamic_cast<NoConstante *>(noAtual) != nullptr)
+    else if (noAtual->getTipo() == TiposNo::CONSTANTE)
     {
         NoConstante *no = dynamic_cast<NoConstante *>(noAtual);
         return new NoConstante(no->conteudoNo());
     }
-    else if (dynamic_cast<NoVariavel *>(noAtual) != nullptr)
+    else if (noAtual->getTipo() == TiposNo::VARIAVEL)
     {
         NoVariavel *no = dynamic_cast<NoVariavel *>(noAtual);
         return new NoVariavel(no->conteudoNo());

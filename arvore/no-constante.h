@@ -11,11 +11,12 @@ public:
     std::vector<No *> filhos();
     double valor(std::vector<double> &variaveis);
     std::string print();
-    int calcularAltura();
+    int calcularTamSubArvore();
     ~NoConstante();
     No *pai();
     void setPai(No *p);
     double conteudoNo();
+    TiposNo getTipo();
 
 private:
     double valorNo;

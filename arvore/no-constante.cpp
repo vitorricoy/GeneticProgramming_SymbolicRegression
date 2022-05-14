@@ -6,7 +6,7 @@ NoConstante::NoConstante(double c)
 {
     noPai = nullptr;
     valorNo = c;
-    altura = calcularAltura();
+    tamSubArvore = calcularTamSubArvore();
 }
 
 int NoConstante::numeroFilhos()
@@ -38,7 +38,7 @@ NoConstante::~NoConstante()
 {
 }
 
-int NoConstante::calcularAltura()
+int NoConstante::calcularTamSubArvore()
 {
     return 1;
 }
@@ -56,4 +56,9 @@ void NoConstante::setPai(No *p)
 double NoConstante::conteudoNo()
 {
     return valorNo;
+}
+
+TiposNo NoConstante::getTipo()
+{
+    return TiposNo::CONSTANTE;
 }

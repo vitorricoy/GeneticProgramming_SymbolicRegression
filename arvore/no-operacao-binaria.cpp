@@ -9,7 +9,7 @@ NoOperacaoBinaria::NoOperacaoBinaria(OperacaoBinaria o, No *f1, No *f2)
     valorNo = o;
     filho1 = f1;
     filho2 = f2;
-    altura = calcularAltura(f1, f2);
+    tamSubArvore = calcularTamSubArvore(f1, f2);
 }
 
 int NoOperacaoBinaria::numeroFilhos()
@@ -77,10 +77,10 @@ NoOperacaoBinaria::~NoOperacaoBinaria()
     delete filho2;
 }
 
-int NoOperacaoBinaria::calcularAltura(No *f1, No *f2)
+int NoOperacaoBinaria::calcularTamSubArvore(No *f1, No *f2)
 {
-    int alt1 = 1 + f1->altura;
-    int alt2 = 1 + f2->altura;
+    int alt1 = 1 + f1->tamSubArvore;
+    int alt2 = 1 + f2->tamSubArvore;
     if (alt1 > alt2)
     {
         return alt1;
@@ -111,4 +111,9 @@ void NoOperacaoBinaria::setFilho1(No *f)
 void NoOperacaoBinaria::setFilho2(No *f)
 {
     filho2 = f;
+}
+
+TiposNo NoOperacaoBinaria::getTipo()
+{
+    return TiposNo::BINARIA;
 }
