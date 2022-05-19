@@ -63,6 +63,7 @@ private:
     CalculadoraFitness *calculadora;
     int indiceIndividuos[1000];
     std::mutex selecaoMutex;
+    std::mutex estatisticaMutex;
 
     std::vector<Estatistica> estatisticas;
     int individuosMelhoresQueMediaDosPais;

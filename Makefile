@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-Wall -Wextra -Wno-unused-parameter -pthread -g
+CFLAGS=-Wall -Wextra -Wno-unused-parameter -pthread -g -fsanitize=thread
 EXEC=./tp1
 
 $(EXEC): main.cpp no-constante.o no-operacao-binaria.o no-operacao-unaria.o no-variavel.o no.o calculadora-fitness.o dados-treinamento.o genotipo.o aleatorio.o programacao-genetica.o

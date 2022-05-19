@@ -5,7 +5,7 @@
 #include "programacao-genetica.h"
 #include "../util/aleatorio.h"
 
-ProgramacaoGenetica::ProgramacaoGenetica(CalculadoraFitness *calculadora, DadosTreinamento *dadosTreinamento, Parametros parametros) : selecaoMutex()
+ProgramacaoGenetica::ProgramacaoGenetica(CalculadoraFitness *calculadora, DadosTreinamento *dadosTreinamento, Parametros parametros) : selecaoMutex(), estatisticaMutex()
 {
     memset(fitness, 0, sizeof(fitness));
     memset(individuos, 0, sizeof(individuos));
@@ -149,7 +149,9 @@ void ProgramacaoGenetica::selecaoOperacaoThread(unsigned i, int geracao)
 {
     if (Aleatorio::doubleAleatorio(0, 1) < parametros.PC)
     {
+        estatisticaMutex.lock();
         numeroCruzamentos++;
+        estatisticaMutex.unlock();
         int indPai = selecionaUm();
         int indMae = selecionaUm();
         Genotipo *pai = individuos[geracao % 2][indPai];
@@ -160,11 +162,15 @@ void ProgramacaoGenetica::selecaoOperacaoThread(unsigned i, int geracao)
 
         if (fitnessFilho < (fitness[indPai] + fitness[indMae]) / 2.0)
         {
+            estatisticaMutex.lock();
             individuosMelhoresQueMediaDosPais++;
+            estatisticaMutex.unlock();
         }
         else if (fitnessFilho > (fitness[indPai] + fitness[indMae]) / 2.0)
         {
+            estatisticaMutex.lock();
             individuosPioresQueMediaDosPais++;
+            estatisticaMutex.unlock();
         }
 
         if (parametros.OPERADORES_ELITISTAS)
@@ -197,7 +203,9 @@ void ProgramacaoGenetica::selecaoOperacaoThread(unsigned i, int geracao)
         Genotipo *individuo = individuos[geracao % 2][indIndividuo];
         if (Aleatorio::doubleAleatorio(0, 1) < parametros.PM)
         {
+            estatisticaMutex.lock();
             numeroMutacoes++;
+            estatisticaMutex.unlock();
             Genotipo *mutacao = individuo->criarMutacao();
             if (parametros.OPERADORES_ELITISTAS)
             {

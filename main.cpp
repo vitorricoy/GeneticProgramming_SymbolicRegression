@@ -27,8 +27,8 @@ int main(int argc, char **argv)
 {
     double PM = 0.05;
     double PC = 0.9;
-    int TAM_POP = 50;
-    int NUM_GER = 50;
+    int TAM_POP = 500;
+    int NUM_GER = 500;
     int TAMANHO_TORNEIO = 3;
     int OPERADORES_ELITISTAS = 0;
     int ELITISMO = 1;
