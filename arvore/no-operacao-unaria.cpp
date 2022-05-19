@@ -33,9 +33,9 @@ double NoOperacaoUnaria::valor(std::vector<double> &variaveis)
     switch (valorNo)
     {
     case SENO:
-        return std::sin(v);
+        return std::isinf(v) ? 0 : std::sin(v);
     case COSSENO:
-        return std::cos(v);
+        return std::isinf(v) ? 0 : std::cos(v);
     case LOG:
         return v == 0 ? 0 : std::log(std::abs(v));
     case EXP:

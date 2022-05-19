@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <mutex>
 
-std::mt19937 Aleatorio::gerador = std::mt19937(static_cast<long unsigned int>((std::time(NULL))));
+std::mt19937 Aleatorio::gerador = std::mt19937(static_cast<long unsigned int>((time(nullptr))));
 std::mutex Aleatorio::mutex;
 
 int Aleatorio::intAleatorio(int de, int ate)

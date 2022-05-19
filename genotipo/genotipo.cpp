@@ -1,259 +1,268 @@
 #include <iostream>
+#include <vector>
 
 #include "genotipo.h"
+#include "../util/aleatorio.h"
 #include "../arvore/no.h"
 #include "../arvore/no-constante.h"
 #include "../arvore/no-variavel.h"
 #include "../arvore/no-operacao-binaria.h"
 #include "../arvore/no-operacao-unaria.h"
-#include "../util/aleatorio.h"
 
 #define NUM_OP_BIN 4
-#define NUM_OP_UN 4
+#define NUM_OP_UN 3
 
 Genotipo::Genotipo(int n)
 {
-    numVariaveis = n;
-    int numTerminais = n + 1;
+    numeroVariaveis = n;
+    raiz = gerarArvoreAleatoria(n, 0);
+    preencherListaNos(raiz);
+}
 
-    inicio = gerarRegraProducaoAleatoria(n);
-
-    for (int i = 0; i < 2; i++)
+No *Genotipo::gerarArvoreAleatoria(int numVar, int profundidade)
+{
+    if (profundidade == 6)
     {
-        expr1.push_back(gerarRegraProducaoAleatoria(n));
+        // Gera só constante ou variavel
+        int constanteOuVariavel = Aleatorio::intAleatorio(0, 1);
+        if (constanteOuVariavel)
+        {
+            // Variavel
+            No *no = new NoVariavel(Variavel(Aleatorio::intAleatorio(0, numVar - 1)));
+            return no;
+        }
+        else
+        {
+            No *no = new NoConstante(Aleatorio::doubleAleatorio(-1, 1));
+            return no;
+        }
     }
 
-    for (int i = 0; i < 4; i++)
+    int operacaoBinOperacaoUnConstanteOuVariavel = Aleatorio::intAleatorio(0, 3);
+    if (operacaoBinOperacaoUnConstanteOuVariavel == 0)
     {
-        expr2.push_back(gerarRegraProducaoAleatoria(n));
+        No *f1 = gerarArvoreAleatoria(numVar, profundidade + 1);
+        No *f2 = gerarArvoreAleatoria(numVar, profundidade + 1);
+        No *no = new NoOperacaoBinaria(OperacaoBinaria(Aleatorio::intAleatorio(0, NUM_OP_BIN - 1)), f1, f2);
+        f1->setPai(no);
+        f2->setPai(no);
+        return no;
     }
-
-    for (int i = 0; i < 8; i++)
+    if (operacaoBinOperacaoUnConstanteOuVariavel == 1)
     {
-        expr3.push_back(gerarRegraProducaoAleatoria(n));
+        No *f = gerarArvoreAleatoria(numVar, profundidade + 1);
+        No *no = new NoOperacaoUnaria(OperacaoUnaria(Aleatorio::intAleatorio(0, NUM_OP_UN - 1)), f);
+        f->setPai(no);
+        return no;
     }
-
-    for (int i = 0; i < 16; i++)
+    if (operacaoBinOperacaoUnConstanteOuVariavel == 2)
     {
-        expr4.push_back(gerarRegraProducaoAleatoria(n));
+        No *no = new NoVariavel(Variavel(Aleatorio::intAleatorio(0, numVar - 1)));
+        return no;
     }
+    No *no = new NoConstante(Aleatorio::doubleAleatorio(-1, 1));
+    return no;
+}
 
-    for (int i = 0; i < 32; i++)
-    {
-        expr5.push_back(gerarRegraProducaoAleatoria(n));
-    }
+Genotipo::Genotipo(int n, No *r)
+{
+    numeroVariaveis = n;
+    raiz = r;
+    preencherListaNos(r);
+}
 
-    for (int i = 0; i < 64; i++)
+void Genotipo::preencherListaNos(No *noAtual)
+{
+    nos.push_back(noAtual);
+    for (unsigned i = 0; i < noAtual->filhos().size(); i++)
     {
-        expr6.push_back(Aleatorio::intAleatorio(0, numTerminais - 1));
-    }
-
-    for (int i = 0; i < 64; i++)
-    {
-        constante.push_back(gerarConstante());
+        preencherListaNos(noAtual->filhos()[i]);
     }
 }
 
-Genotipo::Genotipo(int n, int inicio, std::vector<int> expr1, std::vector<int> expr2, std::vector<int> expr3, std::vector<int> expr4, std::vector<int> expr5, std::vector<int> expr6, std::vector<double> constante)
+void Genotipo::preencherListaNos(No *noAtual, std::vector<No *> &listaNos)
 {
-    numVariaveis = n;
-    this->inicio = inicio;
-    this->expr1 = expr1;
-    this->expr2 = expr2;
-    this->expr3 = expr3;
-    this->expr4 = expr4;
-    this->expr5 = expr5;
-    this->expr6 = expr6;
-    this->constante = constante;
-}
-
-double Genotipo::gerarConstante()
-{
-    return Aleatorio::doubleAleatorio(-1, 1);
-}
-
-int Genotipo::gerarRegraProducaoAleatoria(int numVariaveis)
-{
-    int numTerminais = numVariaveis + 10;
-    int tipo = Aleatorio::intAleatorio(0, 2);
-    if (tipo == 0)
+    listaNos.push_back(noAtual);
+    for (unsigned i = 0; i < noAtual->filhos().size(); i++)
     {
-        return Aleatorio::intAleatorio(0, NUM_OP_BIN - 1);
+        preencherListaNos(noAtual->filhos()[i], listaNos);
     }
-    if (tipo == 0)
-    {
-        return NUM_OP_BIN + Aleatorio::intAleatorio(0, NUM_OP_UN - 1);
-    }
-    return NUM_OP_BIN + NUM_OP_UN + Aleatorio::intAleatorio(0, numVariaveis + 1);
 }
 
 Genotipo *Genotipo::recombinar(Genotipo *par)
 {
-    int mascara = Aleatorio::intAleatorio(1, 255);
-    int novoInicio = inicio;
-    std::vector<int> novaExpr1 = expr1;
-    std::vector<int> novaExpr2 = expr2;
-    std::vector<int> novaExpr3 = expr3;
-    std::vector<int> novaExpr4 = expr4;
-    std::vector<int> novaExpr5 = expr5;
-    std::vector<int> novaExpr6 = expr6;
-    std::vector<double> novaConstante = constante;
-
-    if (mascara & 1)
+    No *copia = copiarArvore(raiz);
+    std::vector<No *> nosCopia;
+    preencherListaNos(copia, nosCopia);
+    No *escolhido1 = nosCopia[Aleatorio::intAleatorio(0, nosCopia.size() - 1)];
+    No *temp = escolhido1;
+    int nivel = -1;
+    while (temp != nullptr)
     {
-        novaConstante = par->constante;
+        nivel++;
+        temp = temp->pai();
+    }
+    int tamMax = 7 - nivel;
+    std::vector<No *> possiveis;
+    for (No *n : par->nos)
+    {
+        if (n->tamSubArvore <= tamMax)
+        {
+            possiveis.push_back(n);
+        }
     }
 
-    if (mascara & 2)
+    if (possiveis.empty())
     {
-        novaExpr6 = par->expr6;
+        std::cout << "POSSIVEIS VAZIO\n";
     }
 
-    if (mascara & 4)
+    No *escolhido2 = possiveis[Aleatorio::intAleatorio(0, possiveis.size() - 1)];
+
+    No *copiaNovaSubarvore = copiarArvore(escolhido2);
+
+    No *paiEscolhido = escolhido1->pai();
+    if (paiEscolhido == nullptr)
     {
-        novaExpr5 = par->expr5;
+        delete escolhido1;
+        return new Genotipo(numeroVariaveis, copiaNovaSubarvore);
+    }
+    copiaNovaSubarvore->setPai(paiEscolhido);
+
+    if (paiEscolhido->getTipo() == TiposNo::BINARIA)
+    {
+        NoOperacaoBinaria *no = dynamic_cast<NoOperacaoBinaria *>(paiEscolhido);
+        if (no->filhos()[0] == escolhido1)
+        {
+            no->setFilho1(copiaNovaSubarvore);
+        }
+        if (no->filhos()[1] == escolhido1)
+        {
+            no->setFilho2(copiaNovaSubarvore);
+        }
+    }
+    else if (paiEscolhido->getTipo() == TiposNo::UNARIA)
+    {
+        NoOperacaoUnaria *no = dynamic_cast<NoOperacaoUnaria *>(paiEscolhido);
+        if (no->filhos()[0] == escolhido1)
+        {
+            no->setFilho(copiaNovaSubarvore);
+        }
     }
 
-    if (mascara & 8)
-    {
-        novaExpr4 = par->expr4;
-    }
+    delete escolhido1;
 
-    if (mascara & 16)
-    {
-        novaExpr3 = par->expr3;
-    }
-
-    if (mascara & 32)
-    {
-        novaExpr2 = par->expr2;
-    }
-
-    if (mascara & 64)
-    {
-        novaExpr1 = par->expr1;
-    }
-
-    if (mascara & 128)
-    {
-        novoInicio = par->inicio;
-    }
-
-    return new Genotipo(this->numVariaveis, novoInicio, novaExpr1, novaExpr2, novaExpr3, novaExpr4, novaExpr5, novaExpr6, novaConstante);
+    No *copiaFinal = copiarArvore(copia);
+    delete copia;
+    return new Genotipo(numeroVariaveis, copiaFinal);
 }
 
 Genotipo *Genotipo::criarMutacao()
 {
-    Genotipo *novoIndividuo = new Genotipo(numVariaveis, inicio, expr1, expr2, expr3, expr4, expr5, expr6, constante);
-    novoIndividuo->mutar();
-    return novoIndividuo;
+    No *mutacao = mutar();
+    return new Genotipo(numeroVariaveis, mutacao);
+}
+
+No *Genotipo::mutar()
+{
+    No *copia = copiarArvore(raiz);
+    std::vector<No *> nosCopia;
+    preencherListaNos(copia, nosCopia);
+    No *escolhido = nosCopia[Aleatorio::intAleatorio(0, nosCopia.size() - 1)];
+    No *temp = escolhido;
+    int nivel = -1;
+    while (temp != nullptr)
+    {
+        nivel++;
+        temp = temp->pai();
+    }
+
+    No *novaSubarvore = gerarArvoreAleatoria(numeroVariaveis, nivel);
+
+    No *paiEscolhido = escolhido->pai();
+
+    if (paiEscolhido == nullptr)
+    {
+        delete escolhido;
+        return novaSubarvore;
+    }
+    else
+    {
+        if (paiEscolhido->getTipo() == TiposNo::BINARIA)
+        {
+            NoOperacaoBinaria *no = dynamic_cast<NoOperacaoBinaria *>(paiEscolhido);
+            if (no->filhos()[0] == escolhido)
+            {
+                no->setFilho1(novaSubarvore);
+            }
+            if (no->filhos()[1] == escolhido)
+            {
+                no->setFilho2(novaSubarvore);
+            }
+        }
+        else if (paiEscolhido->getTipo() == TiposNo::UNARIA)
+        {
+            NoOperacaoUnaria *no = dynamic_cast<NoOperacaoUnaria *>(paiEscolhido);
+            if (no->filhos()[0] == escolhido)
+            {
+                no->setFilho(novaSubarvore);
+            }
+        }
+    }
+
+    delete escolhido;
+
+    No *copiaFinal = copiarArvore(copia);
+    delete copia;
+    return copiaFinal;
 }
 
 Genotipo *Genotipo::criarCopia()
 {
-    Genotipo *novoIndividuo = new Genotipo(numVariaveis, inicio, expr1, expr2, expr3, expr4, expr5, expr6, constante);
-    return novoIndividuo;
+    No *copiaRaiz = copiarArvore(raiz);
+    return new Genotipo(numeroVariaveis, copiaRaiz);
 }
 
-void Genotipo::mutar()
+No *Genotipo::copiarArvore(No *noAtual)
 {
-    int op1 = Aleatorio::intAleatorio(0, 7);
-    switch (op1)
+    if (noAtual->getTipo() == TiposNo::BINARIA)
     {
-    case 0:
-        inicio = gerarRegraProducaoAleatoria(numVariaveis);
-        break;
-    case 1:
-        expr1[Aleatorio::intAleatorio(0, 1)] = gerarRegraProducaoAleatoria(numVariaveis);
-        break;
-
-    case 2:
-        expr2[Aleatorio::intAleatorio(0, 3)] = gerarRegraProducaoAleatoria(numVariaveis);
-        break;
-    case 3:
-        expr3[Aleatorio::intAleatorio(0, 7)] = gerarRegraProducaoAleatoria(numVariaveis);
-        break;
-    case 4:
-        expr4[Aleatorio::intAleatorio(0, 15)] = gerarRegraProducaoAleatoria(numVariaveis);
-        break;
-    case 5:
-        expr5[Aleatorio::intAleatorio(0, 31)] = gerarRegraProducaoAleatoria(numVariaveis);
-        break;
-    case 6:
-        expr6[Aleatorio::intAleatorio(0, 63)] = Aleatorio::intAleatorio(0, numVariaveis + 1);
-        break;
-    default:
-        constante[Aleatorio::intAleatorio(0, 63)] = gerarConstante();
-        break;
+        NoOperacaoBinaria *no = dynamic_cast<NoOperacaoBinaria *>(noAtual);
+        No *f1 = copiarArvore(no->filhos()[0]);
+        No *f2 = copiarArvore(no->filhos()[1]);
+        No *novoNo = new NoOperacaoBinaria(no->conteudoNo(), f1, f2);
+        f1->setPai(novoNo);
+        f2->setPai(novoNo);
+        return novoNo;
     }
+    else if (noAtual->getTipo() == TiposNo::UNARIA)
+    {
+        NoOperacaoUnaria *no = dynamic_cast<NoOperacaoUnaria *>(noAtual);
+        No *f = copiarArvore(no->filhos()[0]);
+        No *novoNo = new NoOperacaoUnaria(no->conteudoNo(), f);
+        f->setPai(novoNo);
+        return novoNo;
+    }
+    else if (noAtual->getTipo() == TiposNo::CONSTANTE)
+    {
+        NoConstante *no = dynamic_cast<NoConstante *>(noAtual);
+        return new NoConstante(no->conteudoNo());
+    }
+    else if (noAtual->getTipo() == TiposNo::VARIAVEL)
+    {
+        NoVariavel *no = dynamic_cast<NoVariavel *>(noAtual);
+        return new NoVariavel(no->conteudoNo());
+    }
+    std::cout << "ERRO\n";
+    return nullptr;
 }
 
-No *Genotipo::converterEmArvore()
+No *Genotipo::obterRaiz()
 {
-    int indices[] = {0, 0, 0, 0, 0, 0, 0};
-    return gerarArvore(indices, 0);
+    return raiz;
 }
 
-No *Genotipo::gerarArvore(int indices[7], int profundidade)
+Genotipo::~Genotipo()
 {
-    if (profundidade == 6)
-    {
-        int producao = expr6[indices[5]];
-        indices[5]++;
-        if (producao < numVariaveis)
-        {
-            return new NoVariavel(Variavel(producao));
-        }
-        double valorConstante = constante[indices[6]];
-        indices[6]++;
-        return new NoConstante(valorConstante);
-    }
-    else
-    {
-        int producao;
-        switch (profundidade)
-        {
-        case 0:
-            producao = inicio;
-            break;
-        case 1:
-            producao = expr1[indices[0]];
-            indices[0]++;
-            break;
-        case 2:
-            producao = expr2[indices[1]];
-            indices[1]++;
-            break;
-        case 3:
-            producao = expr3[indices[2]];
-            indices[2]++;
-            break;
-        case 4:
-            producao = expr4[indices[3]];
-            indices[3]++;
-            break;
-        default:
-            producao = expr5[indices[4]];
-            indices[4]++;
-            break;
-        }
-        if (producao >= 0 && producao <= 3)
-        {
-            No *filho1 = gerarArvore(indices, profundidade + 1);
-            No *filho2 = gerarArvore(indices, profundidade + 1);
-            return new NoOperacaoBinaria(OperacaoBinaria(producao), filho1, filho2);
-        }
-        if (producao >= 4 && producao <= 7)
-        {
-            No *filho = gerarArvore(indices, profundidade + 1);
-            return new NoOperacaoUnaria(OperacaoUnaria(producao - 4), filho);
-        }
-        if (producao >= 8 && producao < 8 + numVariaveis)
-        {
-            return new NoVariavel(Variavel(producao - 8));
-        }
-        double valorConstante = constante[indices[6]];
-        indices[6]++;
-        return new NoConstante(valorConstante);
-    }
+    delete raiz;
 }
