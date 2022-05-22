@@ -10,6 +10,7 @@ NoOperacaoBinaria::NoOperacaoBinaria(OperacaoBinaria o, No *f1, No *f2)
     filho1 = f1;
     filho2 = f2;
     tamSubArvore = calcularTamSubArvore(f1, f2);
+    bloat = 0;
 }
 
 int NoOperacaoBinaria::numeroFilhos()
@@ -29,18 +30,52 @@ std::vector<No *> NoOperacaoBinaria::filhos()
 
 double NoOperacaoBinaria::valor(std::vector<double> &variaveis)
 {
+    bloat = 0;
     double v1 = filho1->valor(variaveis);
     double v2 = filho2->valor(variaveis);
-
+    bloat += filho1->bloat;
+    bloat += filho2->bloat;
     switch (valorNo)
     {
     case SOMA:
+        if (v1 == 0)
+        {
+            bloat++;
+        }
+        if (v2 == 0)
+        {
+            bloat++;
+        }
         return v1 + v2;
     case SUBTRACAO:
+        if (v1 == 0)
+        {
+            bloat++;
+        }
+        if (v2 == 0)
+        {
+            bloat++;
+        }
         return v1 - v2;
     case MULTIPLICACAO:
+        if (v1 == 1)
+        {
+            bloat++;
+        }
+        if (v2 == 1)
+        {
+            bloat++;
+        }
         return v1 * v2;
     case DIVISAO:
+        if (v1 == 1)
+        {
+            bloat++;
+        }
+        if (v2 == 1)
+        {
+            bloat++;
+        }
         return (v2 == 0 || (std::isinf(v1) && std::isinf(v2))) ? 1 : v1 / v2;
     default:
         return 0;

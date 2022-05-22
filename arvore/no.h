@@ -15,7 +15,7 @@ class No
 public:
     No()
     {
-        std::vector<int> oi();
+        bloat = 0;
     }
     virtual int numeroFilhos() = 0;
     virtual bool terminal() = 0;
@@ -27,4 +27,5 @@ public:
     virtual ~No() {}
     int tamSubArvore;
     virtual void setPai(No *p) = 0;
+    int bloat = 0;
 };

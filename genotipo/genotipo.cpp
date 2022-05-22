@@ -24,8 +24,8 @@ No *Genotipo::gerarArvoreAleatoria(int numVar, int profundidade)
     if (profundidade == 6)
     {
         // Gera só constante ou variavel
-        int constanteOuVariavel = Aleatorio::intAleatorio(0, 1);
-        if (constanteOuVariavel)
+        int constanteOuVariavel = Aleatorio::intAleatorio(0, numVar);
+        if (constanteOuVariavel < numVar)
         {
             // Variavel
             No *no = new NoVariavel(Variavel(Aleatorio::intAleatorio(0, numVar - 1)));
@@ -38,8 +38,8 @@ No *Genotipo::gerarArvoreAleatoria(int numVar, int profundidade)
         }
     }
 
-    int operacaoBinOperacaoUnConstanteOuVariavel = Aleatorio::intAleatorio(0, 3);
-    if (operacaoBinOperacaoUnConstanteOuVariavel == 0)
+    int operacaoBinOperacaoUnConstanteOuVariavel = Aleatorio::intAleatorio(0, NUM_OP_BIN + NUM_OP_UN + numVar);
+    if (operacaoBinOperacaoUnConstanteOuVariavel >= 0 && operacaoBinOperacaoUnConstanteOuVariavel < NUM_OP_BIN)
     {
         No *f1 = gerarArvoreAleatoria(numVar, profundidade + 1);
         No *f2 = gerarArvoreAleatoria(numVar, profundidade + 1);
@@ -48,14 +48,14 @@ No *Genotipo::gerarArvoreAleatoria(int numVar, int profundidade)
         f2->setPai(no);
         return no;
     }
-    if (operacaoBinOperacaoUnConstanteOuVariavel == 1)
+    if (operacaoBinOperacaoUnConstanteOuVariavel >= NUM_OP_BIN && operacaoBinOperacaoUnConstanteOuVariavel < NUM_OP_BIN + NUM_OP_UN)
     {
         No *f = gerarArvoreAleatoria(numVar, profundidade + 1);
         No *no = new NoOperacaoUnaria(OperacaoUnaria(Aleatorio::intAleatorio(0, NUM_OP_UN - 1)), f);
         f->setPai(no);
         return no;
     }
-    if (operacaoBinOperacaoUnConstanteOuVariavel == 2)
+    if (operacaoBinOperacaoUnConstanteOuVariavel >= NUM_OP_BIN + NUM_OP_UN && operacaoBinOperacaoUnConstanteOuVariavel < NUM_OP_BIN + NUM_OP_UN + numVar)
     {
         No *no = new NoVariavel(Variavel(Aleatorio::intAleatorio(0, numVar - 1)));
         return no;

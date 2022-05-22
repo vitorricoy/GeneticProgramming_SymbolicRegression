@@ -1,6 +1,7 @@
 #include <thread>
 #include <iostream>
 #include <cstring>
+#include <iomanip>
 
 #include "programacao-genetica.h"
 #include "../util/aleatorio.h"
@@ -11,14 +12,16 @@ ProgramacaoGenetica::ProgramacaoGenetica(CalculadoraFitness *calculadora, DadosT
     memset(individuos, 0, sizeof(individuos));
     memset(indiceIndividuos, 0, sizeof(indiceIndividuos));
     estatisticas.clear();
-    individuosMelhoresQueMediaDosPais = 0;
-    individuosPioresQueMediaDosPais = 0;
+    mutacaoMelhorQueMediaDosPais = 0;
+    mutacaoPiorQueMediaDosPais = 0;
+    cruzamentoMelhorQueMediaDosPais = 0;
+    cruzamentoPiorQueMediaDosPais = 0;
     numeroCruzamentos = 0;
     numeroMutacoes = 0;
 
     this->calculadora = calculadora;
     this->parametros = parametros;
-
+    std::cout << std::fixed << std::setprecision(5);
     for (int i = 0; i < parametros.TAM_POP; i++)
     {
         Genotipo *novo = new Genotipo(dadosTreinamento->dimensao());
@@ -43,8 +46,10 @@ std::vector<Estatistica> ProgramacaoGenetica::obterEstatisticas()
 void ProgramacaoGenetica::selecaoOperacao(int geracao)
 {
     std::vector<std::thread> threads;
-    individuosMelhoresQueMediaDosPais = 0;
-    individuosPioresQueMediaDosPais = 0;
+    mutacaoMelhorQueMediaDosPais = 0;
+    mutacaoPiorQueMediaDosPais = 0;
+    cruzamentoMelhorQueMediaDosPais = 0;
+    cruzamentoPiorQueMediaDosPais = 0;
     numeroCruzamentos = 0;
     numeroMutacoes = 0;
     for (int i = 0; i < parametros.TAM_POP - parametros.ELITISMO; i++)
@@ -72,11 +77,10 @@ void ProgramacaoGenetica::selecaoOperacao(int geracao)
     }
 }
 
-void ProgramacaoGenetica::executar()
+Genotipo *ProgramacaoGenetica::executar()
 {
     for (int geracao = 0; geracao < parametros.NUM_GER; geracao++)
     {
-
         atualizarFitness(geracao);
         selecaoOperacao(geracao);
 
@@ -99,6 +103,7 @@ void ProgramacaoGenetica::executar()
     No *arvore = individuos[parametros.NUM_GER % 2][indMelhor]->obterRaiz();
     std::cout << arvore->print() << "\n";
     std::cout << fitnessMelhor << "\n";
+    return individuos[parametros.NUM_GER % 2][indMelhor];
 }
 
 void ProgramacaoGenetica::atualizarFitnessThread(unsigned i, int geracao)
@@ -120,11 +125,19 @@ void ProgramacaoGenetica::atualizarFitness(int geracao)
     }
 
     std::vector<double> fitnesses;
+    double bloatSoma = 0.0;
+    int individuosComBloat = 0;
     for (int i = 0; i < parametros.TAM_POP; i++)
     {
+        if (individuos[geracao % 2][i]->obterRaiz()->bloat)
+        {
+            bloatSoma += individuos[geracao % 2][i]->obterRaiz()->bloat;
+            individuosComBloat++;
+        }
         fitnesses.push_back(fitness[i]);
     }
-    estatisticas.emplace_back(fitnesses, individuosMelhoresQueMediaDosPais, individuosPioresQueMediaDosPais, numeroCruzamentos, numeroMutacoes);
+    bloatSoma /= (double)individuosComBloat;
+    estatisticas.emplace_back(fitnesses, mutacaoMelhorQueMediaDosPais, mutacaoPiorQueMediaDosPais, cruzamentoMelhorQueMediaDosPais, cruzamentoPiorQueMediaDosPais, numeroCruzamentos, numeroMutacoes, bloatSoma, individuosComBloat);
 }
 
 int ProgramacaoGenetica::selecionaUm()
@@ -163,13 +176,13 @@ void ProgramacaoGenetica::selecaoOperacaoThread(unsigned i, int geracao)
         if (fitnessFilho < (fitness[indPai] + fitness[indMae]) / 2.0)
         {
             estatisticaMutex.lock();
-            individuosMelhoresQueMediaDosPais++;
+            cruzamentoMelhorQueMediaDosPais++;
             estatisticaMutex.unlock();
         }
         else if (fitnessFilho > (fitness[indPai] + fitness[indMae]) / 2.0)
         {
             estatisticaMutex.lock();
-            individuosPioresQueMediaDosPais++;
+            cruzamentoPiorQueMediaDosPais++;
             estatisticaMutex.unlock();
         }
 
@@ -207,9 +220,22 @@ void ProgramacaoGenetica::selecaoOperacaoThread(unsigned i, int geracao)
             numeroMutacoes++;
             estatisticaMutex.unlock();
             Genotipo *mutacao = individuo->criarMutacao();
+
+            double fitnessMutacao = calculadora->calcularFitness(mutacao);
+            if (fitnessMutacao < fitness[indIndividuo])
+            {
+                estatisticaMutex.lock();
+                mutacaoMelhorQueMediaDosPais++;
+                estatisticaMutex.unlock();
+            }
+            else if (fitnessMutacao > fitness[indIndividuo])
+            {
+                estatisticaMutex.lock();
+                mutacaoPiorQueMediaDosPais++;
+                estatisticaMutex.unlock();
+            }
             if (parametros.OPERADORES_ELITISTAS)
             {
-                double fitnessMutacao = calculadora->calcularFitness(mutacao);
                 if (fitnessMutacao <= fitness[indIndividuo])
                 {
                     individuos[(geracao + 1) % 2][i] = mutacao;

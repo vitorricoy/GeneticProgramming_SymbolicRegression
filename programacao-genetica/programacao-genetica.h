@@ -7,12 +7,16 @@
 struct Estatistica
 {
     std::vector<double> fitnesses;
-    int individuosMelhoresQueMediaDosPais;
-    int individuosPioresQueMediaDosPais;
+    int mutacaoMelhorQueMediaDosPais;
+    int mutacaoPiorQueMediaDosPais;
+    int cruzamentoMelhorQueMediaDosPais;
+    int cruzamentoPiorQueMediaDosPais;
     int numeroCruzamentos;
     int numeroMutacoes;
+    double bloat;
+    int individuosComBloat;
 
-    Estatistica(std::vector<double> f, int iM, int iP, int nC, int nM) : fitnesses(f), individuosMelhoresQueMediaDosPais(iM), individuosPioresQueMediaDosPais(iP), numeroCruzamentos(nC), numeroMutacoes(nM)
+    Estatistica(std::vector<double> f, int mM, int mP, int cM, int cP, int nC, int nM, double b, int icb) : fitnesses(f), mutacaoMelhorQueMediaDosPais(mM), mutacaoPiorQueMediaDosPais(mP), cruzamentoMelhorQueMediaDosPais(cM), cruzamentoPiorQueMediaDosPais(cP), numeroCruzamentos(nC), numeroMutacoes(nM), bloat(b), individuosComBloat(icb)
     {
     }
 };
@@ -48,7 +52,7 @@ class ProgramacaoGenetica
 public:
     ProgramacaoGenetica(CalculadoraFitness *calculadora, DadosTreinamento *dadosTreinamento, Parametros parametros);
     ~ProgramacaoGenetica();
-    void executar();
+    Genotipo *executar();
     std::vector<Estatistica> obterEstatisticas();
 
 private:
@@ -66,8 +70,10 @@ private:
     std::mutex estatisticaMutex;
 
     std::vector<Estatistica> estatisticas;
-    int individuosMelhoresQueMediaDosPais;
-    int individuosPioresQueMediaDosPais;
+    int mutacaoMelhorQueMediaDosPais;
+    int mutacaoPiorQueMediaDosPais;
+    int cruzamentoMelhorQueMediaDosPais;
+    int cruzamentoPiorQueMediaDosPais;
     int numeroCruzamentos;
     int numeroMutacoes;
     Parametros parametros;
